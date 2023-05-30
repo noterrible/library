@@ -45,8 +45,8 @@ func SearchBook(context *gin.Context) {
 // @Param bn formData string true "图书编号"
 // @Param name formData string true "图书名称"
 // @Param description formData string true "图书描述"
-// @Param count formData string true "图书数量"
-// @Param category_id formData string true "图书种类id"
+// @Param count formData int true "图书数量"
+// @Param category_id formData int64 true "图书种类id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books [POST]
@@ -65,8 +65,8 @@ func AddBook(context *gin.Context) {
 // @Param bn formData string true "图书编号"
 // @Param name formData string true "图书名称"
 // @Param description formData string true "图书描述"
-// @Param count formData string true "图书数量"
-// @Param category_id formData string true "图书种类id"
+// @Param count formData int true "图书数量"
+// @Param category_id formData int64 true "图书种类id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books/{id} [PUT]

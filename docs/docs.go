@@ -52,14 +52,14 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "图书数量",
                         "name": "count",
                         "in": "formData",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "图书种类id",
                         "name": "category_id",
                         "in": "formData",
@@ -119,14 +119,14 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "图书数量",
                         "name": "count",
                         "in": "formData",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "图书种类id",
                         "name": "category_id",
                         "in": "formData",

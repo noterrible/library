@@ -104,12 +104,12 @@ paths:
         in: formData
         name: count
         required: true
-        type: string
+        type: integer
       - description: 图书种类id
         in: formData
         name: category_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -168,12 +168,12 @@ paths:
         in: formData
         name: count
         required: true
-        type: string
+        type: integer
       - description: 图书种类id
         in: formData
         name: category_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:

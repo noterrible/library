@@ -8,7 +8,7 @@ import "github.com/gin-gonic/gin"
 // @Description	管理员获取某个分类信息
 // @Tags		category
 // @Produce		json
-// @Param id path string true "分类id"
+// @Param id path int64 true "分类id"
 // @Success 200 {object} tools.Response{data=model.Category}
 // @Router			/admin/categories/{id} [GET]
 func GetCategory(context *gin.Context) {

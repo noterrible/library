@@ -219,7 +219,7 @@ func GetUser(context *gin.Context) {
 // @Description	管理员获取用户信息
 // @Tags		user
 // @Produce		json
-// @Param id path string true "用户id"
+// @Param id path int64 true "用户id"
 // @Success 200 {object} tools.Response{data=model.User}
 // @Router			/admin/users/{id} [GET]
 func GetUserById(context *gin.Context) {
@@ -358,7 +358,7 @@ func UpdateUser(context *gin.Context) {
 // @Param userName formData string true "用户名"
 // @Param password formData string true "密码"
 // @Param phone formData string true "电话"
-// @Param status formData string true "用户帐号状态"
+// @Param status formData int true "用户帐号状态"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/users/{id} [POST]
