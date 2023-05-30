@@ -1,0 +1,809 @@
+definitions:
+  logic.Token:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  model.Book:
+    properties:
+      bn:
+        type: string
+      categoryId:
+        type: integer
+      count:
+        description: 默认1
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Record:
+    properties:
+      bookId:
+        type: integer
+      id:
+        type: integer
+      overTime:
+        type: string
+      returnTime:
+        type: string
+      startTime:
+        type: string
+      status:
+        description: 已归还1 未归还0
+        type: integer
+      userId:
+        type: integer
+    type: object
+  model.User:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      sex:
+        type: string
+      status:
+        description: '`json:""默认正常0 封禁1'
+        type: integer
+      userName:
+        type: string
+    type: object
+  tools.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: go图书管理系统
+  title: 图书管理系统V1
+  version: "1.0"
+paths:
+  /admin/books:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 管理员添加图书
+      parameters:
+      - description: 图书编号
+        in: formData
+        name: bn
+        required: true
+        type: string
+      - description: 图书名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 图书描述
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: 图书数量
+        in: formData
+        name: count
+        required: true
+        type: string
+      - description: 图书种类id
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 新增图书
+      tags:
+      - book
+  /admin/books/{id}:
+    delete:
+      description: 管理员删除图书
+      parameters:
+      - description: 书籍id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 管理员删除图书
+      tags:
+      - book
+    put:
+      consumes:
+      - multipart/form-data
+      description: 管理员修改图书
+      parameters:
+      - description: 图书id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 图书编号
+        in: formData
+        name: bn
+        required: true
+        type: string
+      - description: 图书名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 图书描述
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: 图书数量
+        in: formData
+        name: count
+        required: true
+        type: string
+      - description: 图书种类id
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 修改图书
+      tags:
+      - book
+  /admin/categories/{id}:
+    get:
+      description: 管理员获取某个分类信息
+      parameters:
+      - description: 分类id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Category'
+              type: object
+      summary: 管理员获取某个分类信息
+      tags:
+      - category
+  /admin/users:
+    get:
+      description: 搜索获取用户信息
+      parameters:
+      - description: 查询条件
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.User'
+                  type: array
+              type: object
+      summary: 搜索用户
+      tags:
+      - user
+  /admin/users/{id}:
+    get:
+      description: 管理员获取用户信息
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+      summary: 管理员获取用户信息
+      tags:
+      - user
+    post:
+      consumes:
+      - multipart/form-data
+      description: 管理员更新用户信息
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户名
+        in: formData
+        name: userName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 电话
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: 用户帐号状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 更新用户信息
+      tags:
+      - user
+  /admin/users/{id}/records/{status}:
+    get:
+      description: 获取某个用户的借/还记录
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 用户Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 标记是否归还字段
+        in: path
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Record'
+                  type: array
+              type: object
+      summary: 获取用户借/还记录
+      tags:
+      - user
+  /adminLogin:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 会执行图书管理员登录操作
+      parameters:
+      - description: 用户名
+        in: formData
+        name: userName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 图书管理员登录
+      tags:
+      - Librarian
+  /books:
+    get:
+      description: 获取所有图书或者搜索图书
+      parameters:
+      - description: 查询条件
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Book'
+                  type: array
+              type: object
+      summary: 搜索图书
+      tags:
+      - book
+  /books/{id}:
+    get:
+      description: 获取一个图书的信息
+      parameters:
+      - description: 书籍id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Book'
+              type: object
+      summary: 获取图书信息
+      tags:
+      - book
+  /categories:
+    get:
+      description: 搜索获取分类信息
+      parameters:
+      - description: 查询条件
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Category'
+                  type: array
+              type: object
+      summary: 搜索分类
+      tags:
+      - category
+    post:
+      description: 添加分类信息
+      parameters:
+      - description: 分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 添加分类
+      tags:
+      - category
+  /categories/{id}:
+    delete:
+      description: 删除分类信息
+      parameters:
+      - description: 分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 删除分类
+      tags:
+      - category
+    put:
+      description: 更新分类信息
+      parameters:
+      - description: 分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 更新分类
+      tags:
+      - category
+  /getCode:
+    get:
+      description: 用户登录页获取验证码操作
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 登录验证码
+      tags:
+      - user
+  /records/{status}:
+    get:
+      description: 获取图书馆所有的借/还记录
+      parameters:
+      - description: 标记是否归还字段
+        in: path
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Record'
+                  type: array
+              type: object
+      summary: 获取所有借/还记录
+      tags:
+      - Record
+  /user/users/{id}:
+    delete:
+      description: 管理员通过id删除用户
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 删除用户
+      tags:
+      - user
+    get:
+      description: 获取用户信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+      summary: 用户查看信息
+      tags:
+      - user
+  /user/users/{id}/records:
+    get:
+      description: 获取用户所有的借还记录
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 用户Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Record'
+                  type: array
+              type: object
+      summary: 获取某个用户的所有记录
+      tags:
+      - user
+  /user/users/{id}/records/{status}:
+    get:
+      description: 获取某个用户的借/还记录
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 用户Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 标记是否归还字段
+        in: path
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Record'
+                  type: array
+              type: object
+      summary: 获取用户借/还记录
+      tags:
+      - user
+  /user/users/records/:bookId:
+    post:
+      description: 用户借书
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 书籍id
+        in: path
+        name: bookId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 用户借书
+      tags:
+      - book
+    put:
+      consumes:
+      - multipart/form-data
+      description: 用户还书
+      parameters:
+      - description: 书籍id
+        in: path
+        name: bookId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 用户还书
+      tags:
+      - book
+  /userLogin:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 会执行用户登录操作
+      parameters:
+      - description: 用户名
+        in: formData
+        name: userName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 验证码
+        in: formData
+        name: captcha
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/logic.Token'
+              type: object
+      summary: 用户登录
+      tags:
+      - user
+  /users:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户注册或管理员添加用户
+      parameters:
+      - description: 用户名
+        in: formData
+        name: userName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 性名
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 性别
+        in: formData
+        name: sex
+        required: true
+        type: string
+      - description: 电话
+        in: formData
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 新增一个用户
+      tags:
+      - user
+    put:
+      consumes:
+      - multipart/form-data
+      description: 用户修改自己的信息
+      parameters:
+      - description: 用户名
+        in: formData
+        name: userName
+        required: true
+        type: string
+      - description: 旧密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 新密码
+        in: formData
+        name: newPassword
+        required: true
+        type: string
+      - description: 电话
+        in: formData
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 用户修改信息
+      tags:
+      - user
+swagger: "2.0"
