@@ -19,7 +19,19 @@ import (
 // @Success 200 {object} tools.Response{data=model.Book}
 // @Router			/books/{id} [GET]
 func GetBook(context *gin.Context) {
-
+	idString := context.Param("id")
+	id, _ := strconv.ParseInt(idString, 10, 64)
+	book := model.GetBook(id)
+	if book.Id > 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "响应成功",
+		})
+	}
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.InternalServerError,
+		Message: "获取失败",
+	})
 }
 
 // SearchBook godoc
@@ -32,7 +44,13 @@ func GetBook(context *gin.Context) {
 // @Success 200 {object} tools.Response{data=[]model.Book{}}
 // @Router			/books [GET]
 func SearchBook(context *gin.Context) {
-	//if
+	query := context.Query("q")
+	books := model.SearchBook(query)
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "查询书籍成功",
+		Data:    books,
+	})
 }
 
 // AddBook godoc
@@ -51,7 +69,20 @@ func SearchBook(context *gin.Context) {
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books [POST]
 func AddBook(context *gin.Context) {
-
+	var book model.Book
+	if err := context.ShouldBind(&book); err != nil {
+		context.JSON(http.StatusNotAcceptable, tools.Response{
+			Code:    tools.UserInfoError,
+			Message: "绑定失败" + err.Error(),
+			Data:    nil,
+		})
+	}
+	model.AddBook(book)
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "添加书籍成功",
+		Data:    nil,
+	})
 }
 
 // UpdateBook godoc
@@ -71,7 +102,23 @@ func AddBook(context *gin.Context) {
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books/{id} [PUT]
 func UpdateBook(context *gin.Context) {
-
+	idString := context.Param("id")
+	id, _ := strconv.ParseInt(idString, 10, 64)
+	var updateBook model.Book
+	if err := context.ShouldBind(&updateBook); err != nil {
+		context.JSON(http.StatusNotAcceptable, tools.Response{
+			Code:    tools.NotAcceptable,
+			Message: "绑定失败" + err.Error(),
+			Data:    nil,
+		})
+	}
+	updateBook.Id = id
+	model.UpdateBook(updateBook)
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "修改书籍成功",
+		Data:    nil,
+	})
 }
 
 // BorrowBook godoc
@@ -111,15 +158,18 @@ func BorrowBook(context *gin.Context) {
 // @Tags		book
 // @Accept		multipart/form-data
 // @Produce		json
-// @Param bookId path string true "书籍id"
+// @Param id path int64 true "借书记录的id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
-// @Router			/user/users/records/:bookId [PUT]
+// @Router			/user/users/records/:id [PUT]
 func ReturnBook(context *gin.Context) {
-
-}
-func GetStatusBook(context *gin.Context) {
-
+	idString := context.Param("id")
+	id, _ := strconv.ParseInt(idString, 10, 64)
+	model.UpdateRecordAndBook(id)
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "还书成功",
+	})
 }
 
 // DeleteBook godoc
@@ -128,10 +178,16 @@ func GetStatusBook(context *gin.Context) {
 // @Description	管理员删除图书
 // @Tags		book
 // @Produce		json
-// @Param id path string true "书籍id"
+// @Param id path int64 true "书籍id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books/{id} [DELETE]
 func DeleteBook(context *gin.Context) {
-
+	idString := context.Param("id")
+	id, _ := strconv.ParseInt(idString, 10, 64)
+	model.DeleteBook(id)
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "删除书籍成功",
+	})
 }

@@ -1,6 +1,11 @@
 package logic
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"libraryManagementSystem/appv1/model"
+	"libraryManagementSystem/appv1/tools"
+	"net/http"
+)
 
 //type Session struct {
 //	SessionId string `json:"sessionId"`
@@ -19,5 +24,13 @@ import "github.com/gin-gonic/gin"
 // @Failed 406,500 {object} tools.Response
 // @Router			/adminLogin [POST]
 func LibrarianLogin(context *gin.Context) {
-
+	var admin model.Librarian
+	if err := context.ShouldBind(admin); err != nil {
+		context.JSON(http.StatusNotAcceptable, tools.Response{
+			Code:    tools.UserInfoError,
+			Message: "绑定失败" + err.Error(),
+			Data:    nil,
+		})
+	}
+	model.AdminCheck(admin.UserName, admin.Password)
 }

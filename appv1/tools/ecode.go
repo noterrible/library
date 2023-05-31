@@ -11,6 +11,7 @@ const (
 	SourceExist         = 10005
 	NoLogin             = 10006
 	BadRequest          = 10400
+	NotAcceptable       = 10406
 	InternalServerError = 10500
 	// 借书时长30天
 	T = 30 * 86400 * time.Second

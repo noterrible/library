@@ -16,7 +16,7 @@ func UserCheck(userName, password string) User {
 }
 func GetUser(id int64) User {
 	var user User
-	sql := "select * from users where  id=?"
+	sql := "select * from users where id=?"
 	err := Conn.Raw(sql, id).Scan(&user).Error
 	if err != nil {
 		fmt.Println(err.Error())
@@ -48,14 +48,14 @@ func AddUser(user User) {
 	}
 }
 func UpdateUser(user User) {
-	sql := "update users set user_name=? and password=? and phone=? where id=?"
+	sql := "update users set user_name=?,password=?,phone=? where id=?"
 	err := Conn.Exec(sql, user.UserName, user.Password, user.Phone, user.Id).Error
 	if err != nil {
 		mysqlLogger.Error(context.Background(), err.Error())
 	}
 }
 func DeleteUser(id int64) {
-	sql := "delete from user where id=?"
+	sql := "delete from users where id=?"
 	err := Conn.Exec(sql, id).Error
 	if err != nil {
 		mysqlLogger.Error(context.Background(), err.Error())

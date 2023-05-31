@@ -153,10 +153,39 @@ const docTemplate = `{
                 "summary": "管理员删除图书",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "书籍id",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/categories": {
+            "post": {
+                "description": "添加分类信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "添加分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类名称",
+                        "name": "name",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -182,7 +211,7 @@ const docTemplate = `{
                 "summary": "管理员获取某个分类信息",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "分类id",
                         "name": "id",
                         "in": "path",
@@ -267,7 +296,7 @@ const docTemplate = `{
                 "summary": "管理员获取用户信息",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "用户id",
                         "name": "id",
                         "in": "path",
@@ -337,7 +366,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "用户帐号状态",
                         "name": "status",
                         "in": "formData",
@@ -577,33 +606,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "添加分类信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "添加分类",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分类名称",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
             }
         },
         "/categories/{id}": {
@@ -755,36 +757,6 @@ const docTemplate = `{
             }
         },
         "/user/users/records/:bookId": {
-            "put": {
-                "description": "用户还书",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "book"
-                ],
-                "summary": "用户还书",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "书籍id",
-                        "name": "bookId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "用户借书",
                 "produces": [
@@ -805,6 +777,38 @@ const docTemplate = `{
                         "type": "string",
                         "description": "书籍id",
                         "name": "bookId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/records/:id": {
+            "put": {
+                "description": "用户还书",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book"
+                ],
+                "summary": "用户还书",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "借书记录的id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }

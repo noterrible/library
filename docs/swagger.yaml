@@ -128,7 +128,7 @@ paths:
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -184,6 +184,25 @@ paths:
       summary: 修改图书
       tags:
       - book
+  /admin/categories:
+    post:
+      description: 添加分类信息
+      parameters:
+      - description: 分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 添加分类
+      tags:
+      - category
   /admin/categories/{id}:
     get:
       description: 管理员获取某个分类信息
@@ -192,7 +211,7 @@ paths:
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -242,7 +261,7 @@ paths:
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -287,7 +306,7 @@ paths:
         in: formData
         name: status
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -433,24 +452,6 @@ paths:
                   type: array
               type: object
       summary: 搜索分类
-      tags:
-      - category
-    post:
-      description: 添加分类信息
-      parameters:
-      - description: 分类名称
-        in: formData
-        name: name
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/tools.Response'
-      summary: 添加分类
       tags:
       - category
   /categories/{id}:
@@ -674,16 +675,17 @@ paths:
       summary: 用户借书
       tags:
       - book
+  /user/users/records/:id:
     put:
       consumes:
       - multipart/form-data
       description: 用户还书
       parameters:
-      - description: 书籍id
+      - description: 借书记录的id
         in: path
-        name: bookId
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:

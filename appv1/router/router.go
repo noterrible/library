@@ -15,6 +15,7 @@ func New() *gin.Engine {
 	userRouter(r)
 	adminRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/getCode", logic.GetCode)
 	r.POST("/userLogin", logic.UserLogin)
 	r.POST("/users", logic.AddUser)
 	r.POST("/adminLogin", logic.LibrarianLogin)

@@ -26,10 +26,15 @@ func TestGetStatusRecordsByUserId(t *testing.T) {
 func TestCreateRecord(t *testing.T) {
 	record := Record{
 		UserId:    1,
-		BookId:    3,
+		BookId:    1,
 		Status:    0,
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}
 	CreateRecord(record)
+}
+
+func TestUpdateRecordAndBook(t *testing.T) {
+	var id int64 = 2
+	UpdateRecordAndBook(id)
 }

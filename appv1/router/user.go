@@ -17,7 +17,7 @@ func userRouter(r *gin.Engine) {
 		user.GET("/:id/records/:status", logic.GetUserStatusRecords)
 		//用户自助借书还书
 		user.POST("/records/:bookId", logic.BorrowBook)
-		user.PUT("/records/:bookId", logic.ReturnBook)
+		user.PUT("/records/:id", logic.ReturnBook)
 	}
 	//book := base.Group("/books")
 	//{

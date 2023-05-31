@@ -1,6 +1,9 @@
 package model
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 func GetAllRecordsByUserId(id int64) []Record {
 	var records []Record
@@ -43,6 +46,34 @@ func CreateRecord(record Record) {
 	err = Conn.Exec(sql, record.BookId).Error
 	if err != nil {
 		mysqlLogger.Error(context.Background(), err.Error())
+		B.Rollback()
+		return
+	}
+	B.Commit()
+}
+func UpdateRecordAndBook(id int64) {
+	sql := "select * from records where id=?"
+	var record Record
+	err := Conn.Raw(sql, id).Scan(&record).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	record.Status = 1
+	B := Conn.Begin()
+	//更新记录
+	sql = "update records set status=1 where id=?"
+	err = B.Exec(sql, id).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		B.Rollback()
+		return
+	}
+	//更新书籍数量
+	sql = "update books set count=count+1 where id=?"
+	err = B.Exec(sql, record.BookId).Error
+	if err != nil {
+		fmt.Println(err.Error())
 		B.Rollback()
 		return
 	}
