@@ -29,7 +29,7 @@ type Token struct {
 
 // GetCode godoc
 //
-// @Tags		user
+// @Tags		public
 // @Summary		登录验证码
 // @Description	用户登录页获取验证码操作
 // @Produce		json
@@ -94,7 +94,7 @@ func GetCode(ctx *gin.Context) {
 
 		}
 		// 将图像写入文件
-		file, err := os.Create("appV2/view/img/captcha.png")
+		file, err := os.Create("appv1/resource/static/img/captcha.png")
 		fileUrlArr := strings.Split(file.Name(), "/")
 		fileName := fileUrlArr[len(fileUrlArr)-1]
 		if err != nil {
@@ -121,7 +121,7 @@ func GetCode(ctx *gin.Context) {
 //
 // @Summary		用户登录
 // @Description	会执行用户登录操作
-// @Tags		user
+// @Tags		public
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param userName formData string true "用户名"
@@ -188,12 +188,12 @@ func UserLogin(context *gin.Context) {
 //
 // @Summary		用户查看信息
 // @Description	获取用户信息
-// @Tags		user
+// @Tags		user/users
 // @Produce		json
 // @CookieParam id string true "用户id"
-// @Param Authorization header string false "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Success 200 {object} tools.Response{data=model.User}
-// @Router			/user/users/{id} [GET]
+// @Router			/user/users [GET]
 func GetUser(context *gin.Context) {
 	idString, _ := context.Cookie("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
@@ -217,7 +217,7 @@ func GetUser(context *gin.Context) {
 //
 // @Summary		管理员获取用户信息
 // @Description	管理员获取用户信息
-// @Tags		user
+// @Tags		admin/users
 // @Produce		json
 // @Param id path int64 true "用户id"
 // @Success 200 {object} tools.Response{data=model.User}
@@ -245,23 +245,22 @@ func GetUserById(context *gin.Context) {
 //
 // @Summary		搜索用户
 // @Description	搜索获取用户信息
-// @Tags		user
+// @Tags		admin/users
 // @Produce		json
-// @Param q  query string true "查询条件"
+// @Param q  query string false "查询条件"
 // @Success 200 {object} tools.Response{data=[]model.User{}}
 // @Router			/admin/users [GET]
 func SearchUser(context *gin.Context) {
 	query := context.Query("q")
 	dbUsers := model.SearchUser(query)
-	var users []model.User
 	for i, _ := range dbUsers {
 		dbUsers[i].Password = ""
 	}
-	if len(users) > 0 {
+	if len(dbUsers) > 0 {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
 			Message: "用户存在",
-			Data:    users,
+			Data:    dbUsers,
 		})
 		return
 	}
@@ -276,7 +275,7 @@ func SearchUser(context *gin.Context) {
 //
 // @Summary		新增一个用户
 // @Description	用户注册或管理员添加用户
-// @Tags		user
+// @Tags		public
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param userName formData string true "用户名"
@@ -298,7 +297,7 @@ func AddUser(context *gin.Context) {
 		return
 	}
 	model.AddUser(user)
-	context.JSON(http.StatusOK, tools.Response{
+	context.JSON(http.StatusCreated, tools.Response{
 		Code:    tools.OK,
 		Message: "注册成功",
 		Data:    nil,
@@ -309,16 +308,17 @@ func AddUser(context *gin.Context) {
 //
 // @Summary		用户修改信息
 // @Description	用户修改自己的信息
-// @Tags		user
+// @Tags		user/users
 // @Accept		multipart/form-data
 // @Produce		json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param userName formData string true "用户名"
 // @Param password formData string true "旧密码"
 // @Param newPassword formData string true "新密码"
 // @Param phone formData string true "电话"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
-// @Router			/users [PUT]
+// @Router			/user/users [PUT]
 func UpdateUser(context *gin.Context) {
 	var updateUser model.User
 	if err := context.ShouldBind(&updateUser); err != nil {
@@ -354,7 +354,7 @@ func UpdateUser(context *gin.Context) {
 //
 // @Summary		更新用户信息
 // @Description	管理员更新用户信息
-// @Tags		user
+// @Tags		admin/users
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param id path int64 true "用户id"
@@ -364,7 +364,7 @@ func UpdateUser(context *gin.Context) {
 // @Param status formData int true "用户帐号状态"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
-// @Router			/admin/users/{id} [POST]
+// @Router			/admin/users/{id} [PUT]
 func UpdateUserByAdmin(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
@@ -378,7 +378,14 @@ func UpdateUserByAdmin(context *gin.Context) {
 		return
 	}
 	updateUser.Id = id
-	model.UpdateUser(updateUser)
+	err := model.UpdateUser(updateUser)
+	if err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "更新失败" + err.Error(),
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "更新成功",
@@ -389,7 +396,7 @@ func UpdateUserByAdmin(context *gin.Context) {
 //
 // @Summary		删除用户
 // @Description 管理员通过id删除用户
-// @Tags		user
+// @Tags		admin/users
 // @Produce		json
 // @Param id path int64 true "用户id"
 // @Success 200 {object} tools.Response

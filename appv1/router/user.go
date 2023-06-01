@@ -14,10 +14,10 @@ func userRouter(r *gin.Engine) {
 	user := base.Group("/users")
 	{
 		user.GET("", logic.GetUser)
-		user.PUT("/:id", logic.UpdateUser)
-		//user.DELETE(":id", logic.DeleteUser)
-		user.GET("/:id/records", logic.GetUserRecords)
-		user.GET("/:id/records/:status", logic.GetUserStatusRecords)
+		user.PUT("", logic.UpdateUser)
+		//user.DELETE("/:id", logic.DeleteUser)
+		user.GET("/records", logic.GetUserRecords)
+		//user.GET("/records/:status", logic.GetUserStatusRecords)
 		//用户自助借书还书
 		user.POST("/records/:bookId", logic.BorrowBook)
 		user.PUT("/records/:id", logic.ReturnBook)
@@ -34,6 +34,8 @@ func userRouter(r *gin.Engine) {
 	//	category.GET("/:id/books", logic.GetCategoryBooks)
 	//}
 }
+
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMjM0LWxpYnJhcnkiLCJleHAiOjE2ODU3ODU5OTEsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiMSJ9.XLEHaAWVRRsKb4MlsVTUTcW_tqtMD2kRvGKAUDRw-IU
 func userCheck() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		//拦截成功Chec

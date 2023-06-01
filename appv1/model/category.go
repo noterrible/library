@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func SearchCategory(query string) []Category {
 	var categories []Category
@@ -20,7 +23,7 @@ func SearchCategory(query string) []Category {
 }
 func GetCategory(id int64) Category {
 	var category Category
-	sql := "select * from users where id=?"
+	sql := "select * from categories where id=?"
 	err := Conn.Raw(sql, id).Scan(&category).Error
 	if err != nil {
 		fmt.Println(err.Error())
@@ -34,17 +37,19 @@ func AddCategory(category Category) {
 		fmt.Println(err.Error())
 	}
 }
-func UpdateCategory(category Category) {
+func UpdateCategory(category Category) error {
 	sql := "update categories set name=? where id=?"
-	err := Conn.Exec(sql, category.Name, category.Id).Error
-	if err != nil {
-		fmt.Println(err.Error())
+	rows := Conn.Exec(sql, category.Name, category.Id).RowsAffected
+	if rows <= 0 {
+		return errors.New("没有此分类或者没有改动")
 	}
+	return nil
 }
-func DeleteCategory(id int64) {
+func DeleteCategory(id int64) error {
 	sql := "delete from categories where id=?"
-	err := Conn.Exec(sql, id).Error
-	if err != nil {
-		fmt.Println(err.Error())
+	rows := Conn.Exec(sql, id).RowsAffected
+	if rows <= 0 {
+		return errors.New("没有此分类")
 	}
+	return nil
 }

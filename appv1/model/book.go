@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func GetBook(id int64) Book {
 	var book Book
@@ -35,17 +38,20 @@ func AddBook(book Book) {
 		fmt.Println(err.Error())
 	}
 }
-func UpdateBook(book Book) {
+func UpdateBook(book Book) error {
 	sql := "update books set bn=?,name=?,description=?,count=?,category_id=? where id=?"
-	err := Conn.Exec(sql, book.BN, book.Name, book.Description, book.Count, book.CategoryId, book.Id).Error
-	if err != nil {
-		fmt.Println(err.Error())
+	rows := Conn.Exec(sql, book.BN, book.Name, book.Description, book.Count, book.CategoryId, book.Id).RowsAffected
+	if rows <= 0 {
+		fmt.Println(errors.New("记录不存在或者没有改动"))
+		return errors.New("记录不存在或者没有改动")
 	}
+	return nil
 }
-func DeleteBook(id int64) {
+func DeleteBook(id int64) error {
 	sql := "delete from books where id=?"
-	err := Conn.Exec(sql, id).Error
-	if err != nil {
-		fmt.Println(err.Error())
+	count := Conn.Exec(sql, id).RowsAffected
+	if count == 0 {
+		return errors.New("记录不存在")
 	}
+	return nil
 }

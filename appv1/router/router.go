@@ -5,13 +5,12 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"libraryManagementSystem/appv1/logic"
-	"libraryManagementSystem/appv1/model"
 	_ "libraryManagementSystem/docs"
 )
 
 func New() *gin.Engine {
-	model.New()
 	r := gin.Default()
+	r.Static("/static", "./appv1/resource")
 	userRouter(r)
 	adminRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

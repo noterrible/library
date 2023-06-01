@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"libraryManagementSystem/appv1/model"
 	"libraryManagementSystem/appv1/tools"
@@ -13,7 +14,7 @@ import (
 //
 // @Summary		获取图书信息
 // @Description	获取一个图书的信息
-// @Tags		book
+// @Tags		public
 // @Produce		json
 // @Param id path int64 true "书籍id"
 // @Success 200 {object} tools.Response{data=model.Book}
@@ -26,6 +27,7 @@ func GetBook(context *gin.Context) {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
 			Message: "响应成功",
+			Data:    book,
 		})
 		return
 	}
@@ -39,9 +41,9 @@ func GetBook(context *gin.Context) {
 //
 // @Summary		搜索图书
 // @Description	获取所有图书或者搜索图书
-// @Tags		book
+// @Tags		public
 // @Produce		json
-// @Param q  query string true "查询条件"
+// @Param q  query string false "输入书籍编号或者名称"
 // @Success 200 {object} tools.Response{data=[]model.Book{}}
 // @Router			/books [GET]
 func SearchBook(context *gin.Context) {
@@ -58,14 +60,14 @@ func SearchBook(context *gin.Context) {
 //
 // @Summary		新增图书
 // @Description	管理员添加图书
-// @Tags		book
+// @Tags		admin/books
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param bn formData string true "图书编号"
 // @Param name formData string true "图书名称"
 // @Param description formData string true "图书描述"
 // @Param count formData int true "图书数量"
-// @Param category_id formData int64 true "图书种类id"
+// @Param categoryId formData int64 true "图书种类id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books [POST]
@@ -81,7 +83,7 @@ func AddBook(context *gin.Context) {
 
 	}
 	model.AddBook(book)
-	context.JSON(http.StatusOK, tools.Response{
+	context.JSON(http.StatusCreated, tools.Response{
 		Code:    tools.OK,
 		Message: "添加书籍成功",
 		Data:    nil,
@@ -92,7 +94,7 @@ func AddBook(context *gin.Context) {
 //
 // @Summary		修改图书
 // @Description	管理员修改图书
-// @Tags		book
+// @Tags		admin/books
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param id path int64 true "图书id"
@@ -100,7 +102,7 @@ func AddBook(context *gin.Context) {
 // @Param name formData string true "图书名称"
 // @Param description formData string true "图书描述"
 // @Param count formData int true "图书数量"
-// @Param category_id formData int64 true "图书种类id"
+// @Param categoryId formData int64 true "图书种类id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/books/{id} [PUT]
@@ -117,7 +119,13 @@ func UpdateBook(context *gin.Context) {
 		return
 	}
 	updateBook.Id = id
-	model.UpdateBook(updateBook)
+	if err := model.UpdateBook(updateBook); err != nil {
+		context.JSON(http.StatusNotFound, tools.Response{
+			Code:    tools.SourceNotFound,
+			Message: "没有此书，修改失败",
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "修改书籍成功",
@@ -129,28 +137,36 @@ func UpdateBook(context *gin.Context) {
 //
 // @Summary		用户借书
 // @Description	用户借书
-// @Tags		book
+// @Tags		user/books
 // @Produce		json
-// @Param Authorization header string false "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @CookieParam id  string true "用户id"
-// @Param bookId path string true "书籍id"
+// @Param bookId path int64 true "书籍id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
-// @Router			/user/users/records/:bookId [POST]
+// @Router			/user/users/records/{bookId} [POST]
 func BorrowBook(context *gin.Context) {
 	userIdString, _ := context.Cookie("id")
 	bookIdString := context.Param("bookId")
-	userId, _ := strconv.ParseInt(userIdString, 10, 64)
-	bookId, _ := strconv.ParseInt(bookIdString, 10, 64)
+	fmt.Println("bookIdString:", bookIdString)
+	userId, err := strconv.ParseInt(userIdString, 10, 64)
+	bookId, err := strconv.ParseInt(bookIdString, 10, 64)
+	if err != nil {
+		context.JSON(http.StatusNotAcceptable, tools.Response{
+			Code:    tools.NotAcceptable,
+			Message: "失败" + err.Error(),
+		})
+		return
+	}
 	record := model.Record{
 		UserId:    userId,
 		BookId:    bookId,
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}
-	record.Id = model.CreateRecord(record)
-	if record.Id > 0 {
-		context.JSON(http.StatusOK, tools.Response{
+	record.Id, err = model.CreateRecord(record)
+	if record.Id > 0 && err == nil {
+		context.JSON(http.StatusCreated, tools.Response{
 			Code:    tools.OK,
 			Message: "借书成功",
 		})
@@ -158,7 +174,7 @@ func BorrowBook(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
-		Message: "借书失败",
+		Message: "借书失败" + err.Error(),
 	})
 }
 
@@ -166,18 +182,19 @@ func BorrowBook(context *gin.Context) {
 //
 // @Summary		用户还书
 // @Description	用户还书
-// @Tags		book
+// @Tags		user/books
 // @Accept		multipart/form-data
 // @Produce		json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param id path int64 true "借书记录的id"
 // @Success 200 {object} tools.Response
 // @Failed 406,500 {object} tools.Response
-// @Router			/user/users/records/:id [PUT]
+// @Router			/user/users/records/{id} [PUT]
 func ReturnBook(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
-	id = model.UpdateRecordAndBook(id)
-	if id > 0 {
+	id, err := model.UpdateRecordAndBook(id)
+	if id > 0 && err == nil {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
 			Message: "还书成功",
@@ -186,7 +203,7 @@ func ReturnBook(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
-		Message: "还书失败",
+		Message: "还书失败" + err.Error(),
 	})
 }
 
@@ -194,7 +211,7 @@ func ReturnBook(context *gin.Context) {
 //
 // @Summary		管理员删除图书
 // @Description	管理员删除图书
-// @Tags		book
+// @Tags		admin/books
 // @Produce		json
 // @Param id path int64 true "书籍id"
 // @Success 200 {object} tools.Response
@@ -203,7 +220,14 @@ func ReturnBook(context *gin.Context) {
 func DeleteBook(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
-	model.DeleteBook(id)
+	err := model.DeleteBook(id)
+	if err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "没有此书",
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "删除书籍成功",

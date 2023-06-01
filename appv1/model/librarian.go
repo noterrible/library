@@ -16,7 +16,7 @@ func GetAdmin(userName, password string) Librarian {
 	return admin
 }
 func AdminCheck(id int64, name string) bool {
-	sql := "select * from librarians where id=? and name=?"
+	sql := "select * from librarians where id=? and user_name=?"
 	var admin Librarian
 	err := Conn.Raw(sql, id, name).First(&admin).Error
 	if err != nil {

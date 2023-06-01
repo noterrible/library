@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"libraryManagementSystem/appv1/model"
 	"libraryManagementSystem/appv1/tools"
@@ -12,7 +13,7 @@ import (
 //
 // @Summary		管理员获取某个分类信息
 // @Description	管理员获取某个分类信息
-// @Tags		category
+// @Tags		admin/categories
 // @Produce		json
 // @Param id path int64 true "分类id"
 // @Success 200 {object} tools.Response{data=model.Category}
@@ -32,13 +33,13 @@ func GetCategory(context *gin.Context) {
 //
 // @Summary		搜索分类
 // @Description	搜索获取分类信息
-// @Tags		category
+// @Tags		public
 // @Produce		json
-// @Param q  query string true "查询条件"
+// @Param q  query string false "查询条件"
 // @Success 200 {object} tools.Response{data=[]model.Category{}}
 // @Router			/categories [GET]
 func SearchCategory(context *gin.Context) {
-	query := context.Param("id")
+	query := context.Query("q")
 	categories := model.SearchCategory(query)
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
@@ -51,22 +52,25 @@ func SearchCategory(context *gin.Context) {
 //
 // @Summary		添加分类
 // @Description	添加分类信息
-// @Tags		category
+// @Tags		admin/categories
+// @Accept		multipart/form-data
 // @Produce		json
-// @Param name  formData string true "分类名称"
+// @Param name formData string true "分类名称"
 // @Success 200 {object} tools.Response
 // @Router			/admin/categories [POST]
 func AddCategory(context *gin.Context) {
-	var category model.Category
-	if err := context.ShouldBind(&category); err != nil {
-		context.JSON(http.StatusNotAcceptable, tools.Response{
-			Code:    tools.UserInfoError,
-			Message: "绑定失败" + err.Error(),
-		})
-		return
-	}
+	category := model.Category{}
+	category.Name = context.PostForm("name")
+	//这里为什么绑定不成功？
+	//if err := context.ShouldBind(&category); err != nil {
+	//	context.JSON(http.StatusNotAcceptable, tools.Response{
+	//		Code:    tools.UserInfoError,
+	//		Message: "绑定失败" + err.Error(),
+	//	})
+	//	return
+	//}
 	model.AddCategory(category)
-	context.JSON(http.StatusOK, tools.Response{
+	context.JSON(http.StatusCreated, tools.Response{
 		Code:    tools.OK,
 		Message: "添加分类成功",
 	})
@@ -76,26 +80,37 @@ func AddCategory(context *gin.Context) {
 //
 // @Summary		更新分类
 // @Description	更新分类信息
-// @Tags		category
+// @Tags		admin/categories
+// @Accept		multipart/form-data
 // @Produce		json
 // @Param id path int64 true "分类id"
-// @Param name  formData string true "分类名称"
+// @Param name formData string true "分类名称"
 // @Success 200 {object} tools.Response
-// @Router			/categories/{id} [PUT]
+// @Router			/admin/categories/{id} [PUT]
 func UpdateCategory(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
 	var updateCategory model.Category
-	if err := context.ShouldBind(&updateCategory); err != nil {
-		context.JSON(http.StatusNotAcceptable, tools.Response{
-			Code:    tools.UserInfoError,
-			Message: "绑定失败" + err.Error(),
-			Data:    nil,
+	updateCategory.Name = context.PostForm("name")
+	//绑定失败同上
+	//if err := context.ShouldBind(&updateCategory); err != nil {
+	//	context.JSON(http.StatusNotAcceptable, tools.Response{
+	//		Code:    tools.UserInfoError,
+	//		Message: "绑定失败" + err.Error(),
+	//		Data:    nil,
+	//	})
+	//	return
+	//}
+	fmt.Println("id:", id)
+	updateCategory.Id = id
+	err := model.UpdateCategory(updateCategory)
+	if err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "更新失败" + err.Error(),
 		})
 		return
 	}
-	updateCategory.Id = id
-	model.UpdateCategory(updateCategory)
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "更新成功",
@@ -106,15 +121,22 @@ func UpdateCategory(context *gin.Context) {
 //
 // @Summary		删除分类
 // @Description	删除分类信息
-// @Tags		category
+// @Tags		admin/categories
 // @Produce		json
 // @Param id path int64 true "分类id"
 // @Success 200 {object} tools.Response
-// @Router			/categories/{id} [DELETE]
+// @Router			/admin/categories/{id} [DELETE]
 func DeleteCategory(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
-	model.DeleteCategory(id)
+	err := model.DeleteCategory(id)
+	if err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "删除失败失败，" + err.Error(),
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "删除成功",

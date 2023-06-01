@@ -26,7 +26,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "admin/books"
                 ],
                 "summary": "新增图书",
                 "parameters": [
@@ -61,7 +61,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "图书种类id",
-                        "name": "category_id",
+                        "name": "categoryId",
                         "in": "formData",
                         "required": true
                     }
@@ -86,7 +86,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "admin/books"
                 ],
                 "summary": "修改图书",
                 "parameters": [
@@ -128,7 +128,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "图书种类id",
-                        "name": "category_id",
+                        "name": "categoryId",
                         "in": "formData",
                         "required": true
                     }
@@ -148,7 +148,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "admin/books"
                 ],
                 "summary": "管理员删除图书",
                 "parameters": [
@@ -173,11 +173,14 @@ const docTemplate = `{
         "/admin/categories": {
             "post": {
                 "description": "添加分类信息",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "admin/categories"
                 ],
                 "summary": "添加分类",
                 "parameters": [
@@ -206,7 +209,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "admin/categories"
                 ],
                 "summary": "管理员获取某个分类信息",
                 "parameters": [
@@ -238,6 +241,114 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "更新分类信息",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin/categories"
+                ],
+                "summary": "更新分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除分类信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin/categories"
+                ],
+                "summary": "删除分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/records/{status}": {
+            "get": {
+                "description": "获取图书馆所有的借/还记录",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin/records"
+                ],
+                "summary": "获取所有借/还记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标记是否归还字段",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/tools.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Record"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         },
         "/admin/users": {
@@ -247,7 +358,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "admin/users"
                 ],
                 "summary": "搜索用户",
                 "parameters": [
@@ -255,8 +366,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "查询条件",
                         "name": "q",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -291,7 +401,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "admin/users"
                 ],
                 "summary": "管理员获取用户信息",
                 "parameters": [
@@ -324,7 +434,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
+            "put": {
                 "description": "管理员更新用户信息",
                 "consumes": [
                     "multipart/form-data"
@@ -333,7 +443,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "admin/users"
                 ],
                 "summary": "更新用户信息",
                 "parameters": [
@@ -383,6 +493,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/users/{id}/records": {
+            "get": {
+                "description": "获取用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin/users"
+                ],
+                "summary": "获取用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/tools.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Record"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/admin/users/{id}/records/{status}": {
             "get": {
                 "description": "获取某个用户的借/还记录",
@@ -390,16 +544,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "admin/users"
                 ],
                 "summary": "获取用户借/还记录",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header"
-                    },
                     {
                         "type": "integer",
                         "description": "用户Id",
@@ -450,7 +598,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Librarian"
+                    "public"
                 ],
                 "summary": "图书管理员登录",
                 "parameters": [
@@ -486,16 +634,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "public"
                 ],
                 "summary": "搜索图书",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "查询条件",
+                        "description": "输入书籍编号或者名称",
                         "name": "q",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -530,7 +677,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "public"
                 ],
                 "summary": "获取图书信息",
                 "parameters": [
@@ -571,7 +718,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "public"
                 ],
                 "summary": "搜索分类",
                 "parameters": [
@@ -579,8 +726,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "查询条件",
                         "name": "q",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -608,69 +754,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories/{id}": {
-            "put": {
-                "description": "更新分类信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "更新分类",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "分类id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "分类名称",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "删除分类信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "删除分类",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "分类id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/getCode": {
             "get": {
                 "description": "用户登录页获取验证码操作",
@@ -678,7 +761,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "public"
                 ],
                 "summary": "登录验证码",
                 "responses": {
@@ -712,125 +795,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/records/{status}": {
-            "get": {
-                "description": "获取图书馆所有的借/还记录",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Record"
-                ],
-                "summary": "获取所有借/还记录",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "标记是否归还字段",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/tools.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Record"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/user/users/records/:bookId": {
-            "post": {
-                "description": "用户借书",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "book"
-                ],
-                "summary": "用户借书",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header"
-                    },
-                    {
-                        "type": "string",
-                        "description": "书籍id",
-                        "name": "bookId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/users/records/:id": {
-            "put": {
-                "description": "用户还书",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "book"
-                ],
-                "summary": "用户还书",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "借书记录的id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/users/{id}": {
+        "/user/users": {
             "get": {
                 "description": "获取用户信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "user/users"
                 ],
                 "summary": "用户查看信息",
                 "parameters": [
@@ -838,7 +810,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -862,13 +835,198 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "description": "用户修改自己的信息",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user/users"
+                ],
+                "summary": "用户修改信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "userName",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "旧密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "newPassword",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电话",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/records": {
+            "get": {
+                "description": "获取用户所有记录或者借/还记录",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user/users"
+                ],
+                "summary": "用户获取所有记录或者借/还记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "是否归还",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/tools.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Record"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/records/{bookId}": {
+            "post": {
+                "description": "用户借书",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user/books"
+                ],
+                "summary": "用户借书",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "书籍id",
+                        "name": "bookId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/records/{id}": {
+            "put": {
+                "description": "用户还书",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user/books"
+                ],
+                "summary": "用户还书",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "借书记录的id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/{id}": {
             "delete": {
                 "description": "管理员通过id删除用户",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "admin/users"
                 ],
                 "summary": "删除用户",
                 "parameters": [
@@ -890,113 +1048,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/users/{id}/records": {
-            "get": {
-                "description": "获取用户所有的借还记录",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "获取某个用户的所有记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户Id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/tools.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Record"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/user/users/{id}/records/{status}": {
-            "get": {
-                "description": "获取某个用户的借/还记录",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "获取用户借/还记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户Id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "标记是否归还字段",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/tools.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Record"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/userLogin": {
             "post": {
                 "description": "会执行用户登录操作",
@@ -1007,7 +1058,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "public"
                 ],
                 "summary": "用户登录",
                 "parameters": [
@@ -1056,57 +1107,6 @@ const docTemplate = `{
             }
         },
         "/users": {
-            "put": {
-                "description": "用户修改自己的信息",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "用户修改信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "userName",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "旧密码",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "新密码",
-                        "name": "newPassword",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "电话",
-                        "name": "phone",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/tools.Response"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "用户注册或管理员添加用户",
                 "consumes": [
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "public"
                 ],
                 "summary": "新增一个用户",
                 "parameters": [

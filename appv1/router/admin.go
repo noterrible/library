@@ -17,7 +17,8 @@ func adminRouter(r *gin.Engine) {
 		user.PUT("/:id", logic.UpdateUserByAdmin)
 		user.DELETE("/:id", logic.DeleteUser)
 		//获取用户已归还或者未归还的所有记录
-		user.GET("/:id/records/:status", logic.GetUserStatusRecords)
+		user.GET("/:id/records", logic.GetUserRecordsByAdmin)
+		user.GET("/:id/records/:status", logic.GetUserStatusRecordsByAdmin)
 		//user.POST("/:id/records/:bookId", logic.BorrowBook)
 		//user.PUT("/:id/records/:bookId", logic.ReturnBook)
 	}

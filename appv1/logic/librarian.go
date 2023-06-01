@@ -15,7 +15,7 @@ import (
 //
 // @Summary		图书管理员登录
 // @Description	会执行图书管理员登录操作
-// @Tags		Librarian
+// @Tags		public
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param userName formData string true "用户名"
@@ -25,12 +25,13 @@ import (
 // @Router			/adminLogin [POST]
 func LibrarianLogin(context *gin.Context) {
 	var admin model.Librarian
-	if err := context.ShouldBind(admin); err != nil {
+	if err := context.ShouldBind(&admin); err != nil {
 		context.JSON(http.StatusNotAcceptable, tools.Response{
 			Code:    tools.UserInfoError,
 			Message: "绑定失败" + err.Error(),
 			Data:    nil,
 		})
+		return
 	}
 	if admin = model.GetAdmin(admin.UserName, admin.Password); admin.Id > 0 {
 		err := model.SetSession(context, admin.Id, admin.UserName)
@@ -51,5 +52,4 @@ func LibrarianLogin(context *gin.Context) {
 		Code:    tools.OK,
 		Message: "登陆失败",
 	})
-	return
 }

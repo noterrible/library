@@ -7,8 +7,8 @@ import (
 )
 
 // 创建cookie储存器
-var store = sessions.NewCookieStore([]byte("secret"))
-var sessionName = "login"
+var store = sessions.NewCookieStore([]byte("1234secret"))
+var sessionName = "admin"
 
 // 获取session值
 func GetSession(c *gin.Context) map[interface{}]interface{} {

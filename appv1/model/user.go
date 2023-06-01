@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -47,12 +48,13 @@ func AddUser(user User) {
 		mysqlLogger.Error(context.Background(), err.Error())
 	}
 }
-func UpdateUser(user User) {
+func UpdateUser(user User) error {
 	sql := "update users set user_name=?,password=?,phone=? where id=?"
-	err := Conn.Exec(sql, user.UserName, user.Password, user.Phone, user.Id).Error
-	if err != nil {
-		mysqlLogger.Error(context.Background(), err.Error())
+	rows := Conn.Exec(sql, user.UserName, user.Password, user.Phone, user.Id).RowsAffected
+	if rows <= 0 {
+		return errors.New("没有此用户")
 	}
+	return nil
 }
 func DeleteUser(id int64) {
 	sql := "delete from users where id=?"
