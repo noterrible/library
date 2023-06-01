@@ -295,6 +295,7 @@ func AddUser(context *gin.Context) {
 			Message: "绑定失败" + err.Error(),
 			Data:    nil,
 		})
+		return
 	}
 	model.AddUser(user)
 	context.JSON(http.StatusOK, tools.Response{
@@ -326,6 +327,7 @@ func UpdateUser(context *gin.Context) {
 			Message: "绑定失败" + err.Error(),
 			Data:    nil,
 		})
+		return
 	}
 	userIdString, _ := context.Cookie("id")
 	userId, _ := strconv.ParseInt(userIdString, 10, 64)
@@ -340,6 +342,7 @@ func UpdateUser(context *gin.Context) {
 			Code:    tools.OK,
 			Message: "更新成功",
 		})
+		return
 	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.UserInfoError,

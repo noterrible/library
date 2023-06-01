@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"libraryManagementSystem/appv1/logic"
+	"libraryManagementSystem/appv1/model"
 )
 
 func adminRouter(r *gin.Engine) {
@@ -48,6 +49,16 @@ func adminRouter(r *gin.Engine) {
 }
 func librarianCheck() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		session := model.GetSession(context)
+		idInter := session["id"]
+		nameInter := session["name"]
+		id := idInter.(int64)
+		name := nameInter.(string)
+		if model.AdminCheck(id, name) {
+			context.Next()
+			return
+		}
+		context.Abort()
+		return
 	}
 }

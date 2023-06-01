@@ -27,6 +27,7 @@ func GetBook(context *gin.Context) {
 			Code:    tools.OK,
 			Message: "响应成功",
 		})
+		return
 	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.InternalServerError,
@@ -76,6 +77,8 @@ func AddBook(context *gin.Context) {
 			Message: "绑定失败" + err.Error(),
 			Data:    nil,
 		})
+		return
+
 	}
 	model.AddBook(book)
 	context.JSON(http.StatusOK, tools.Response{
@@ -111,6 +114,7 @@ func UpdateBook(context *gin.Context) {
 			Message: "绑定失败" + err.Error(),
 			Data:    nil,
 		})
+		return
 	}
 	updateBook.Id = id
 	model.UpdateBook(updateBook)
@@ -144,10 +148,17 @@ func BorrowBook(context *gin.Context) {
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}
-	model.CreateRecord(record)
+	record.Id = model.CreateRecord(record)
+	if record.Id > 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "借书成功",
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
-		Message: "借书成功",
+		Message: "借书失败",
 	})
 }
 
@@ -165,10 +176,17 @@ func BorrowBook(context *gin.Context) {
 func ReturnBook(context *gin.Context) {
 	idString := context.Param("id")
 	id, _ := strconv.ParseInt(idString, 10, 64)
-	model.UpdateRecordAndBook(id)
+	id = model.UpdateRecordAndBook(id)
+	if id > 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "还书成功",
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
-		Message: "还书成功",
+		Message: "还书失败",
 	})
 }
 

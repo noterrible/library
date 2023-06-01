@@ -31,7 +31,10 @@ func TestCreateRecord(t *testing.T) {
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}
-	CreateRecord(record)
+	id := CreateRecord(record)
+	if id > 0 {
+
+	}
 }
 
 func TestUpdateRecordAndBook(t *testing.T) {
