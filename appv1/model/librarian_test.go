@@ -6,5 +6,5 @@ import (
 )
 
 func TestIsAdmin(t *testing.T) {
-	fmt.Println("校验管理员：", AdminCheck("admin", "admin"))
+	fmt.Println("校验管理员：", GetAdmin("admin", "admin"))
 }

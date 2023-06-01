@@ -32,5 +32,24 @@ func LibrarianLogin(context *gin.Context) {
 			Data:    nil,
 		})
 	}
-	model.AdminCheck(admin.UserName, admin.Password)
+	if admin = model.GetAdmin(admin.UserName, admin.Password); admin.Id > 0 {
+		err := model.SetSession(context, admin.Id, admin.UserName)
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, tools.Response{
+				Code:    tools.InternalServerError,
+				Message: "登陆失败" + err.Error(),
+			})
+			return
+		}
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "登陆成功",
+		})
+		return
+	}
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "登陆失败",
+	})
+	return
 }

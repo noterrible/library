@@ -15,6 +15,8 @@ const (
 	InternalServerError = 10500
 	// 借书时长30天
 	T = 30 * 86400 * time.Second
+	// 还书截止距离1天
+	Sub = 86400 * time.Second
 )
 
 type Response struct {

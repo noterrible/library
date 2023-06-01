@@ -63,6 +63,7 @@ func AddCategory(context *gin.Context) {
 			Code:    tools.UserInfoError,
 			Message: "绑定失败" + err.Error(),
 		})
+		return
 	}
 	model.AddCategory(category)
 	context.JSON(http.StatusOK, tools.Response{
