@@ -51,3 +51,10 @@ type Record struct {
 	OverTime   time.Time `json:"overTime" form:"overTime"`
 	ReturnTime time.Time `json:"returnTime" form:"returnTime"`
 }
+type Message struct {
+	Id         int64     `json:"id" form:"id"`
+	UserId     int64     `json:"userId" form:"userId"`
+	Message    string    `json:"message" form:"message" gorm:"type:varchar(100)"`
+	Status     int       `json:"status" form:"status"` //0未读 1已读
+	CreateTime time.Time `json:"createTime" form:"createTime"`
+}

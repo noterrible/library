@@ -247,12 +247,14 @@ func GetUserById(context *gin.Context) {
 // @Description	搜索获取用户信息
 // @Tags		admin/users
 // @Produce		json
-// @Param q  query string false "查询条件"
+// @Param userName  query string false "用户名"
+// @Param name  query string false "用户姓名"
 // @Success 200 {object} tools.Response{data=[]model.User{}}
 // @Router			/admin/users [GET]
 func SearchUser(context *gin.Context) {
-	query := context.Query("q")
-	dbUsers := model.SearchUser(query)
+	userName := context.Query("userName")
+	name := context.Query("name")
+	dbUsers := model.SearchUser(userName, name)
 	for i, _ := range dbUsers {
 		dbUsers[i].Password = ""
 	}

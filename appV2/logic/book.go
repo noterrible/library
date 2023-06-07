@@ -43,12 +43,14 @@ func GetBook(context *gin.Context) {
 // @Description	获取所有图书或者搜索图书
 // @Tags		public
 // @Produce		json
-// @Param q  query string false "输入书籍编号或者名称"
+// @Param ISBN  query string false "书籍编号"
+// @Param bookName  query string false "图书名称"
 // @Success 200 {object} tools.Response{data=[]model.BookInfo{}}
 // @Router			/books [GET]
 func SearchBook(context *gin.Context) {
-	query := context.Query("q")
-	books := model.SearchBook(query)
+	ISBN := context.Query("ISBN")
+	bookName := context.Query("bookName")
+	books := model.SearchBook(ISBN, bookName)
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "查询书籍成功",
@@ -179,6 +181,7 @@ func BorrowBook(context *gin.Context) {
 	record := model.Record{
 		UserId:    userId,
 		BookId:    bookId,
+		Status:    0,
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}

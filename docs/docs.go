@@ -20,7 +20,7 @@ const docTemplate = `{
             "post": {
                 "description": "管理员添加图书",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -31,46 +31,137 @@ const docTemplate = `{
                 "summary": "新增图书",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "图书编号",
-                        "name": "bn",
-                        "in": "formData",
-                        "required": true
+                        "description": "书名",
+                        "name": "bookName",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "图书名称",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
+                        "description": "作者",
+                        "name": "author",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "图书描述",
-                        "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "description": "出版社",
+                        "name": "publishingHouse",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "integer",
+                        "description": "译者",
+                        "name": "translator",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "发行时间",
+                        "name": "publishDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "页数",
+                        "name": "pages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ISBN号码",
+                        "name": "ISBN",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "价格",
+                        "name": "price",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "内容简介",
+                        "name": "briefIntroduction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "作者简介",
+                        "name": "authorIntroduction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "封面地址",
+                        "name": "imgUrl",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "删除标识",
+                        "name": "delFlg",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "图书数量",
                         "name": "count",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
-                        "type": "integer",
                         "description": "图书种类id",
                         "name": "categoryId",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -80,7 +171,7 @@ const docTemplate = `{
             "put": {
                 "description": "管理员修改图书",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -98,46 +189,137 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "图书编号",
-                        "name": "bn",
-                        "in": "formData",
-                        "required": true
+                        "description": "书名",
+                        "name": "bookName",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "图书名称",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
+                        "description": "作者",
+                        "name": "author",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
-                        "description": "图书描述",
-                        "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "description": "出版社",
+                        "name": "publishingHouse",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "integer",
+                        "description": "译者",
+                        "name": "translator",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "发行时间",
+                        "name": "publishDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "页数",
+                        "name": "pages",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ISBN号码",
+                        "name": "ISBN",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "价格",
+                        "name": "price",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "内容简介",
+                        "name": "briefIntroduction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "作者简介",
+                        "name": "authorIntroduction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "封面地址",
+                        "name": "imgUrl",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "删除标识",
+                        "name": "delFlg",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "图书数量",
                         "name": "count",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
-                        "type": "integer",
                         "description": "图书种类id",
                         "name": "categoryId",
-                        "in": "formData",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -164,7 +346,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -196,7 +378,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -227,13 +409,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Category"
+                                            "$ref": "#/definitions/libraryManagementSystem_appV2_model.Category"
                                         }
                                     }
                                 }
@@ -274,7 +456,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -301,7 +483,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -332,7 +514,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -340,7 +522,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Record"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Record"
                                             }
                                         }
                                     }
@@ -364,8 +546,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "查询条件",
-                        "name": "q",
+                        "description": "用户名",
+                        "name": "userName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户姓名",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -375,7 +563,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -383,7 +571,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.User"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.User"
                                             }
                                         }
                                     }
@@ -419,13 +607,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.User"
+                                            "$ref": "#/definitions/libraryManagementSystem_appV2_model.User"
                                         }
                                     }
                                 }
@@ -487,7 +675,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -518,7 +706,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -526,7 +714,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Record"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Record"
                                             }
                                         }
                                     }
@@ -569,7 +757,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -577,7 +765,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Record"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Record"
                                             }
                                         }
                                     }
@@ -621,7 +809,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -640,8 +828,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "输入书籍编号或者名称",
-                        "name": "q",
+                        "description": "书籍编号",
+                        "name": "ISBN",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "图书名称",
+                        "name": "bookName",
                         "in": "query"
                     }
                 ],
@@ -651,7 +845,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -659,7 +853,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Book"
+                                                "$ref": "#/definitions/model.BookInfo"
                                             }
                                         }
                                     }
@@ -695,13 +889,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Book"
+                                            "$ref": "#/definitions/model.BookInfo"
                                         }
                                     }
                                 }
@@ -735,7 +929,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -743,7 +937,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Category"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Category"
                                             }
                                         }
                                     }
@@ -770,7 +964,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -789,7 +983,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -820,13 +1014,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.User"
+                                            "$ref": "#/definitions/libraryManagementSystem_appV2_model.User"
                                         }
                                     }
                                 }
@@ -888,7 +1082,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -925,7 +1119,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
@@ -933,7 +1127,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Record"
+                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Record"
                                             }
                                         }
                                     }
@@ -974,7 +1168,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -1013,7 +1207,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -1042,7 +1236,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -1090,13 +1284,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/tools.Response"
+                                    "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/logic.Token"
+                                            "$ref": "#/definitions/libraryManagementSystem_appV2_logic.Token"
                                         }
                                     }
                                 }
@@ -1160,7 +1354,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/tools.Response"
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
                         }
                     }
                 }
@@ -1168,13 +1362,178 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "logic.Token": {
+        "libraryManagementSystem_appV1_logic.Token": {
             "type": "object",
             "properties": {
                 "access_token": {
                     "type": "string"
                 },
                 "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV1_model.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV1_model.Record": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "overTime": {
+                    "type": "string"
+                },
+                "returnTime": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "已归还1 未归还0",
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "libraryManagementSystem_appV1_model.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "` + "`" + `json:\"\"默认正常0 封禁1",
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV1_tools.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV2_logic.Token": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV2_model.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV2_model.Record": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "overTime": {
+                    "type": "string"
+                },
+                "returnTime": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "已归还1 未归还0",
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "libraryManagementSystem_appV2_model.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "` + "`" + `json:\"\"默认正常0 封禁1",
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "libraryManagementSystem_appV2_tools.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
                     "type": "string"
                 }
             }
@@ -1203,79 +1562,47 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Category": {
+        "model.BookInfo": {
             "type": "object",
             "properties": {
+                "ISBN": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "authorIntroduction": {
+                    "type": "string"
+                },
+                "bookName": {
+                    "type": "string"
+                },
+                "briefIntroduction": {
+                    "type": "string"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "count": {
+                    "description": "默认1",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Record": {
-            "type": "object",
-            "properties": {
-                "bookId": {
+                "pages": {
                     "type": "integer"
                 },
-                "id": {
-                    "type": "integer"
+                "price": {
+                    "type": "number"
                 },
-                "overTime": {
+                "publishDate": {
                     "type": "string"
                 },
-                "returnTime": {
+                "publishingHouse": {
                     "type": "string"
                 },
-                "startTime": {
-                    "type": "string"
-                },
-                "status": {
-                    "description": "已归还1 未归还0",
-                    "type": "integer"
-                },
-                "userId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.User": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "sex": {
-                    "type": "string"
-                },
-                "status": {
-                    "description": "` + "`" + `json:\"\"默认正常0 封禁1",
-                    "type": "integer"
-                },
-                "userName": {
-                    "type": "string"
-                }
-            }
-        },
-        "tools.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "message": {
+                "translator": {
                     "type": "string"
                 }
             }
@@ -1285,7 +1612,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "2.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

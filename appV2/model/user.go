@@ -24,14 +24,14 @@ func GetUser(id int64) User {
 	}
 	return user
 }
-func SearchUser(query string) []User {
+func SearchUser(userName, name string) []User {
 	var users []User
 	var users1 []User
 	sql := "select * from users"
 	err := Conn.Raw(sql).Scan(&users).Error
-	if query != "" {
-		sql = "select * from users where user_name like ? or name like ?"
-		err = Conn.Raw(sql, query+"%", "%"+query+"%").Find(&users1).Error
+	if userName != "" || name != "" {
+		sql = "select * from users where user_name like ? and name like ?"
+		err = Conn.Raw(sql, userName+"%", "%"+name+"%").Find(&users1).Error
 		if err != nil {
 			mysqlLogger.Error(context.Background(), err.Error())
 			return nil
@@ -42,8 +42,8 @@ func SearchUser(query string) []User {
 }
 
 func AddUser(user User) {
-	sql := "insert into users(user_name,password,name,sex,phone) values (?,?,?,?,?)"
-	err := Conn.Exec(sql, user.UserName, user.Password, user.Name, user.Sex, user.Phone).Error
+	sql := "insert into users(user_name,password,name,sex,phone,status) values (?,?,?,?,?,?)"
+	err := Conn.Exec(sql, user.UserName, user.Password, user.Name, user.Sex, user.Phone, 0).Error
 	if err != nil {
 		mysqlLogger.Error(context.Background(), err.Error())
 	}

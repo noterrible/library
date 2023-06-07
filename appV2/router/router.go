@@ -5,11 +5,14 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"libraryManagementSystem/appV2/logic"
+	"libraryManagementSystem/appV2/model"
 	_ "libraryManagementSystem/docs"
+	"time"
 )
 
 func New() *gin.Engine {
 	r := gin.Default()
+	go CronTask()
 	r.Static("/static", "./appV2/resource")
 	userRouter(r)
 	adminRouter(r)
@@ -26,4 +29,17 @@ func New() *gin.Engine {
 	}
 	r.GET("/categories", logic.SearchCategory)
 	return r
+}
+func CronTask() {
+	// 创建定时器，每隔半个小时执行一次
+	t := time.NewTicker(time.Minute * 30)
+	defer t.Stop()
+	// 循环执行
+	for {
+		select {
+		// 定时器触发时执行的操作
+		case <-t.C:
+			model.ListeningTask()
+		}
+	}
 }

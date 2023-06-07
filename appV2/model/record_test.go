@@ -41,3 +41,8 @@ func TestUpdateRecordAndBook(t *testing.T) {
 	var id int64 = 2
 	UpdateRecordAndBook(id)
 }
+
+func TestListeningTask(t *testing.T) {
+	ListeningTask()
+
+}

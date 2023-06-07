@@ -35,9 +35,9 @@ func GetStatusRecords(status int) []Record {
 
 func CreateRecord(record Record) (int64, error) {
 	var book BookInfo
-	sql := "SELECT count FROM book_info WHERE id = ?"
-	rows := Conn.Raw(sql, record.BookId).Scan(&book).RowsAffected
-	if rows == 0 {
+	sql := "SELECT * FROM book_info WHERE id = ?"
+	Conn.Raw(sql, record.BookId).Scan(&book)
+	if book.Id <= 0 {
 		return 0, errors.New("没有此书")
 	}
 	B := Conn.Begin()
@@ -67,8 +67,8 @@ func CreateRecord(record Record) (int64, error) {
 func UpdateRecordAndBook(id int64) (int64, error) {
 	sql := "select * from records where id=?"
 	var record Record
-	rows := Conn.Raw(sql, id).Scan(&record).RowsAffected
-	if rows <= 0 {
+	Conn.Raw(sql, id).Scan(&record)
+	if record.Id <= 0 {
 		return 0, errors.New("你没有关于这本书的借书记录")
 	}
 	if record.Status == 1 {

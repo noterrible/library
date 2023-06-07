@@ -51,13 +51,15 @@ func adminRouter(r *gin.Engine) {
 func librarianCheck() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		session := model.GetSession(context)
-		idInter := session["id"]
-		nameInter := session["name"]
-		id := idInter.(int64)
-		name := nameInter.(string)
-		if model.AdminCheck(id, name) {
-			context.Next()
-			return
+		idInter, ok1 := session["id"]
+		nameInter, ok2 := session["name"]
+		if ok1 && ok2 {
+			id := idInter.(int64)
+			name := nameInter.(string)
+			if model.AdminCheck(id, name) {
+				context.Next()
+				return
+			}
 		}
 		context.Abort()
 		return

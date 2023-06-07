@@ -15,14 +15,14 @@ func GetBook(id int64) BookInfo {
 	}
 	return book
 }
-func SearchBook(query string) []BookInfo {
+func SearchBook(ISBN, bookName string) []BookInfo {
 	var books []BookInfo
 	var books1 []BookInfo
 	sql := "select * from book_info"
 	err := Conn.Raw(sql).Scan(&books).Error
-	if query != "" {
-		sql = "select * from book_info where ISBN like ? or book_name like ?"
-		err = Conn.Raw(sql, query+"%", "%"+query+"%").Find(&books1).Error
+	if ISBN != "" || bookName != "" {
+		sql = "select * from book_info where ISBN like ? and book_name like ?"
+		err = Conn.Raw(sql, ISBN+"%", "%"+bookName+"%").Find(&books1).Error
 		if err != nil {
 			fmt.Println(err.Error())
 			return nil

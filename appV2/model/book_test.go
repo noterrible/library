@@ -8,7 +8,8 @@ import (
 
 func TestSearchBook(t *testing.T) {
 	q := "BN"
-	fmt.Println("搜索书籍"+q+"：", SearchBook(q))
+
+	fmt.Println("搜索书籍"+q+"：", SearchBook(q, ""))
 }
 
 func TestAddBook(t *testing.T) {
