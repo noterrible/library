@@ -91,6 +91,21 @@ func UpdateRecordAndBook(id int64) (int64, error) {
 		B.Rollback()
 		return 0, err
 	}
+	//还书更新消息系统，把未读的还书提示状态置为已读
+	//查有没有要还的书
+	sql = "select * from records where over_time >= DATE_SUB(NOW(), INTERVAL 1 DAY) and status=0 and user_id"
+	var records []Record
+	B.Raw(sql, record.UserId).Scan(&records)
+	//没有要还的书，消息则置为已读
+	if len(records) == 0 {
+		sql = "update messages set status==1 where user_id=?"
+		err = B.Exec(sql, record.UserId).Error
+		if err != nil {
+			fmt.Println(err.Error())
+			B.Rollback()
+			return 0, err
+		}
+	}
 	B.Commit()
 	return record.Id, nil
 }
