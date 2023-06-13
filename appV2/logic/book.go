@@ -1,10 +1,12 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"libraryManagementSystem/appV2/model"
 	"libraryManagementSystem/appV2/tools"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -52,11 +54,31 @@ func GetBook(context *gin.Context) {
 func SearchBook(context *gin.Context) {
 	ISBN := context.Query("ISBN")
 	bookName := context.Query("bookName")
-	books := model.SearchBook(ISBN, bookName)
 	currentPageString := context.Query("currentPage")
 	pageSizeString := context.Query("pageSize")
+	//查缓存
+	key := fmt.Sprintf("books_%v_%v_%v_%v", currentPageString, pageSizeString, ISBN, bookName)
+	pageRedisJson, err := model.InfoCacheRedisConn.Get(context, key).Result()
+	// 反序列化数据为结构体
+	var pageRedis tools.Page[model.BookInfo]
+	err = json.Unmarshal([]byte(pageRedisJson), &pageRedis)
+	if err == nil { //查到有数据，返回缓存数据
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "查询到缓存",
+			Data:    pageRedis,
+		})
+		return
+	}
+	//缓存没有，去查数据库
+	books := model.SearchBook(ISBN, bookName)
 	//查出所有数据后分页函数进行分页
 	page := tools.Pages(books, currentPageString, pageSizeString)
+	//将查出的数据存到redis
+	pageJson, _ := json.Marshal(page)
+	//失效时间
+	loseTime := time.Duration(rand.Intn(100)) * time.Second
+	model.InfoCacheRedisConn.Set(context, key, pageJson, loseTime)
 	if page.Total == 0 {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
