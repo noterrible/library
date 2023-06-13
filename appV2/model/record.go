@@ -35,12 +35,13 @@ func GetStatusRecords(status int) []Record {
 
 func CreateRecord(record Record) (int64, error) {
 	var book BookInfo
-	sql := "SELECT * FROM book_info WHERE id = ?"
-	Conn.Raw(sql, record.BookId).Scan(&book)
+	B := Conn.Begin()
+	sql := "SELECT * FROM book_info WHERE id = ? for update"
+	B.Raw(sql, record.BookId).Scan(&book)
 	if book.Id <= 0 {
+		B.Rollback()
 		return 0, errors.New("没有此书")
 	}
-	B := Conn.Begin()
 	if book.Count <= 0 {
 		B.Rollback()
 		return 0, errors.New("书籍数量不够")
@@ -55,7 +56,7 @@ func CreateRecord(record Record) (int64, error) {
 	}
 
 	sql = "update book_info set count=count-1 where id=?"
-	err = Conn.Exec(sql, record.BookId).Error
+	err = B.Exec(sql, record.BookId).Error
 	if err != nil {
 		fmt.Println(err.Error())
 		B.Rollback()
@@ -65,16 +66,18 @@ func CreateRecord(record Record) (int64, error) {
 	return record.Id, nil
 }
 func UpdateRecordAndBook(id int64) (int64, error) {
-	sql := "select * from records where id=?"
+	B := Conn.Begin()
+	sql := "select * from records where id=? for update"
 	var record Record
-	Conn.Raw(sql, id).Scan(&record)
+	B.Raw(sql, id).Scan(&record)
 	if record.Id <= 0 {
+		B.Rollback()
 		return 0, errors.New("你没有关于这本书的借书记录")
 	}
 	if record.Status == 1 {
+		B.Rollback()
 		return 0, errors.New("你已经还过书了")
 	}
-	B := Conn.Begin()
 	//更新记录
 	sql = "update records set status=1 where id=?"
 	err := B.Exec(sql, id).Error

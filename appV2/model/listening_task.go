@@ -16,21 +16,24 @@ func ListeningTask() {
 	}
 	//生成所有未还书的用户消息
 	for _, userId := range userIds {
+		B := Conn.Begin()
 		//再次检测该用户是否已还
-		sql = "select * from records where status=0 and user_id=?"
+		sql = "select * from records where status=0 and user_id=? for update"
 		var users []User
-		Conn.Raw(sql, userId).Scan(&users)
+		B.Raw(sql, userId).Scan(&users)
 		//检测该用户最近30天是否已生成过未读消息
 		sql = "select * from messages where status=0 and user_id=? and create_time>= DATE_SUB(CURDATE(), INTERVAL 30 DAY)"
 		var messages []Message
-		Conn.Raw(sql, userId).Scan(&messages)
+		B.Raw(sql, userId).Scan(&messages)
 		if len(users) != 0 && len(messages) == 0 {
 			sql = "insert into messages(user_id,message,status,create_time) values(?,?,?,?)"
-			err := Conn.Exec(sql, userId, "您有书需要归还", 0, time.Now()).Error
+			err := B.Exec(sql, userId, "您有书需要归还", 0, time.Now()).Error
 			if err != nil {
 				fmt.Println(err.Error())
+				B.Rollback()
 				return
 			}
 		}
+		B.Commit()
 	}
 }

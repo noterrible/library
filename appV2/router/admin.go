@@ -47,6 +47,10 @@ func adminRouter(r *gin.Engine) {
 		//所有归还或者未归还的记录
 		record.GET("/:status", logic.GetStatusRecords)
 	}
+	librarian := base.Group("/librarian")
+	{
+		librarian.GET("/logout", logic.LibrarianLogout)
+	}
 }
 func librarianCheck() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -57,6 +61,8 @@ func librarianCheck() gin.HandlerFunc {
 			id := idInter.(int64)
 			name := nameInter.(string)
 			if model.AdminCheck(id, name) {
+				//刷新登录状态，保持24Hour
+				model.SetSession(context, id, name)
 				context.Next()
 				return
 			}

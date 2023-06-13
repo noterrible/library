@@ -35,16 +35,30 @@ func GetCategory(context *gin.Context) {
 // @Description	搜索获取分类信息
 // @Tags		public
 // @Produce		json
+// @Param currentPage  query string true "当前页"
+// @Param pageSize  query string true "页大小"
 // @Param q  query string false "查询条件"
-// @Success 200 {object} tools.Response{data=[]model.Category{}}
+// @Success 200 {object} tools.Response{data=tools.Page[model.Category]{}}
 // @Router			/categories [GET]
 func SearchCategory(context *gin.Context) {
 	query := context.Query("q")
 	categories := model.SearchCategory(query)
+	currentPageString := context.Query("currentPage")
+	pageSizeString := context.Query("pageSize")
+	//查出所有数据后分页函数进行分页
+	page := tools.Pages(categories, currentPageString, pageSizeString)
+	if page.Total == 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "没有此页数据",
+			Data:    nil,
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "查询分类成功",
-		Data:    categories,
+		Data:    page,
 	})
 }
 

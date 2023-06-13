@@ -489,6 +489,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/librarian/logout": {
+            "get": {
+                "description": "会执行图书管理员退出登录操作",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public"
+                ],
+                "summary": "图书管理员退出登录",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/records/{status}": {
             "get": {
                 "description": "获取图书馆所有的借/还记录",
@@ -544,6 +564,20 @@ const docTemplate = `{
                 ],
                 "summary": "搜索用户",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "当前页",
+                        "name": "currentPage",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "用户名",
@@ -828,6 +862,20 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "当前页",
+                        "name": "currentPage",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "书籍编号",
                         "name": "ISBN",
                         "in": "query"
@@ -851,10 +899,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.BookInfo"
-                                            }
+                                            "$ref": "#/definitions/tools.Page-model_BookInfo"
                                         }
                                     }
                                 }
@@ -918,6 +963,20 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "当前页",
+                        "name": "currentPage",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页大小",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "查询条件",
                         "name": "q",
                         "in": "query"
@@ -935,10 +994,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/libraryManagementSystem_appV2_model.Category"
-                                            }
+                                            "$ref": "#/definitions/tools.Page-libraryManagementSystem_appV2_model_Category"
                                         }
                                     }
                                 }
@@ -1075,6 +1131,35 @@ const docTemplate = `{
                         "description": "电话",
                         "name": "phone",
                         "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/libraryManagementSystem_appV2_tools.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/users/messages": {
+            "get": {
+                "description": "获取用户收件箱信息(这个接口获取消息没有什么意义，只是提示有书没还)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user/users"
+                ],
+                "summary": "用户收件箱",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1275,6 +1360,13 @@ const docTemplate = `{
                         "description": "验证码",
                         "name": "captcha",
                         "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码的key",
+                        "name": "captchaKey",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -1604,6 +1696,56 @@ const docTemplate = `{
                 },
                 "translator": {
                     "type": "string"
+                }
+            }
+        },
+        "tools.Page-libraryManagementSystem_appV2_model_Category": {
+            "type": "object",
+            "properties": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/libraryManagementSystem_appV2_model.Category"
+                    }
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
+                }
+            }
+        },
+        "tools.Page-model_BookInfo": {
+            "type": "object",
+            "properties": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BookInfo"
+                    }
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
                 }
             }
         }

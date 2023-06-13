@@ -43,18 +43,32 @@ func GetBook(context *gin.Context) {
 // @Description	获取所有图书或者搜索图书
 // @Tags		public
 // @Produce		json
+// @Param currentPage  query string true "当前页"
+// @Param pageSize  query string true "页大小"
 // @Param ISBN  query string false "书籍编号"
 // @Param bookName  query string false "图书名称"
-// @Success 200 {object} tools.Response{data=[]model.BookInfo{}}
+// @Success 200 {object} tools.Response{data=tools.Page[model.BookInfo]{}}
 // @Router			/books [GET]
 func SearchBook(context *gin.Context) {
 	ISBN := context.Query("ISBN")
 	bookName := context.Query("bookName")
 	books := model.SearchBook(ISBN, bookName)
+	currentPageString := context.Query("currentPage")
+	pageSizeString := context.Query("pageSize")
+	//查出所有数据后分页函数进行分页
+	page := tools.Pages(books, currentPageString, pageSizeString)
+	if page.Total == 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "没有此页数据",
+			Data:    nil,
+		})
+		return
+	}
 	context.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "查询书籍成功",
-		Data:    books,
+		Data:    page,
 	})
 }
 
@@ -167,6 +181,23 @@ func UpdateBook(context *gin.Context) {
 // @Router			/user/users/records/{bookId} [POST]
 func BorrowBook(context *gin.Context) {
 	userIdString, _ := context.Cookie("id")
+	//查询用户3秒内是否请求过
+	url := context.Request.URL.Path
+	pathStr := fmt.Sprintf("%v%v", url, userIdString)
+	requestQuery := model.StopRestartRequestConn
+	//如果redis存过，则提醒休息重试
+	redisPathStr, _ := requestQuery.Get(context, pathStr).Result()
+	if pathStr == redisPathStr {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "请求太快，请休息一下重试~",
+			Data:    nil,
+		})
+		return
+	}
+	//每次请求时，将请求url存到redis
+
+	requestQuery.Set(context, pathStr, pathStr, time.Second*3)
 	bookIdString := context.Param("bookId")
 	fmt.Println("bookIdString:", bookIdString)
 	userId, err := strconv.ParseInt(userIdString, 10, 64)

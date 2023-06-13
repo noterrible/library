@@ -53,3 +53,29 @@ func LibrarianLogin(context *gin.Context) {
 		Message: "登陆失败",
 	})
 }
+
+// LibrarianLogout godoc
+//
+// @Summary		图书管理员退出登录
+// @Description	会执行图书管理员退出登录操作
+// @Tags		public
+// @Produce		json
+// @Success 200 {object} tools.Response
+// @Failed 406,500 {object} tools.Response
+// @Router			/admin/librarian/logout [GET]
+func LibrarianLogout(ctx *gin.Context) {
+	err := model.FlushSession(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, tools.Response{
+			Code:    tools.InternalServerError,
+			Message: "退出登陆失败",
+			Data:    nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "退出成功",
+		Data:    nil,
+	})
+}

@@ -7,17 +7,11 @@ import (
 
 func SearchCategory(query string) []Category {
 	var categories []Category
-	var categories1 []Category
-	sql := "select * from categories"
-	err := Conn.Raw(sql).Scan(&categories).Error
-	if query != "" {
-		sql = "select * from categories where name like ?"
-		err = Conn.Raw(sql, "%"+query+"%").Find(&categories1).Error
-		if err != nil {
-			fmt.Println(err.Error())
-			return nil
-		}
-		return categories1
+	sql := "select * from categories where name like ?"
+	err := Conn.Raw(sql, "%"+query+"%").Find(&categories).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
 	}
 	return categories
 }

@@ -31,9 +31,9 @@ func TestCreateRecord(t *testing.T) {
 		StartTime: time.Now(),
 		OverTime:  time.Now().Add(tools.T),
 	}
-	id, _ := CreateRecord(record)
-	if id > 0 {
-
+	_, err := CreateRecord(record)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 }
 

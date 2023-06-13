@@ -37,6 +37,10 @@ type Token struct {
 // @Failure 500 {object} tools.Response
 // @Router			/getCode [GET]
 func GetCode(ctx *gin.Context) {
+	//时间戳当验证码的key
+	timestamp := time.Now().UnixNano()
+	key := fmt.Sprintf("%d", timestamp)
+
 	fileName := func() string {
 
 		// 设置图片大小
@@ -52,7 +56,7 @@ func GetCode(ctx *gin.Context) {
 		//验证码存到redis
 
 		var redisClient *redis.Client = model.RedisConn
-		err := redisClient.Set(ctx, "captcha", code, 5*time.Minute).Err()
+		err := redisClient.Set(ctx, "captcha_"+key, code, 5*time.Minute).Err()
 		if err != nil {
 			fmt.Println(err.Error())
 			ctx.JSON(http.StatusOK, tools.Response{
@@ -112,7 +116,7 @@ func GetCode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "获取验证码",
-		Data:    map[string]string{"imgName": fileName},
+		Data:    map[string]string{"imgName": fileName, "captchaKey": key},
 	})
 	return
 }
@@ -127,6 +131,7 @@ func GetCode(ctx *gin.Context) {
 // @Param userName formData string true "用户名"
 // @Param password formData string true "密码"
 // @Param captcha formData string true "验证码"
+// @Param captchaKey query string true "验证码的key"
 // @Success 200 {object} tools.Response{data=Token}
 // @Failed 406,500 {object} tools.Response
 // @Router			/userLogin [POST]
@@ -144,7 +149,11 @@ func UserLogin(context *gin.Context) {
 	//校验验证码
 	formCode := context.PostForm("captcha")
 	var redisClient *redis.Client = model.RedisConn
-	redisCode, _ := redisClient.Get(context, "captcha").Result()
+
+	//redis验证码的key
+	key := context.Query("captchaKey")
+
+	redisCode, _ := redisClient.Get(context, "captcha_"+key).Result()
 	if redisCode != formCode {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.CaptchaError,
@@ -247,6 +256,8 @@ func GetUserById(context *gin.Context) {
 // @Description	搜索获取用户信息
 // @Tags		admin/users
 // @Produce		json
+// @Param currentPage  query string true "当前页"
+// @Param pageSize  query string true "页大小"
 // @Param userName  query string false "用户名"
 // @Param name  query string false "用户姓名"
 // @Success 200 {object} tools.Response{data=[]model.User{}}
@@ -255,21 +266,26 @@ func SearchUser(context *gin.Context) {
 	userName := context.Query("userName")
 	name := context.Query("name")
 	dbUsers := model.SearchUser(userName, name)
+	//把要响应用户密码置空
 	for i, _ := range dbUsers {
 		dbUsers[i].Password = ""
 	}
-	if len(dbUsers) > 0 {
+	currentPageString := context.Query("currentPage")
+	pageSizeString := context.Query("pageSize")
+	//查出所有数据后分页函数进行分页
+	page := tools.Pages(dbUsers, currentPageString, pageSizeString)
+	if page.Total == 0 {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
-			Message: "用户存在",
-			Data:    dbUsers,
+			Message: "没有此页数据",
+			Data:    nil,
 		})
 		return
 	}
 	context.JSON(http.StatusOK, tools.Response{
-		Code:    tools.UserIsNotExist,
-		Message: "用户不存在",
-		Data:    nil,
+		Code:    tools.OK,
+		Message: "用户存在",
+		Data:    page,
 	})
 }
 

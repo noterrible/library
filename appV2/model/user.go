@@ -26,17 +26,11 @@ func GetUser(id int64) User {
 }
 func SearchUser(userName, name string) []User {
 	var users []User
-	var users1 []User
-	sql := "select * from users"
-	err := Conn.Raw(sql).Scan(&users).Error
-	if userName != "" || name != "" {
-		sql = "select * from users where user_name like ? and name like ?"
-		err = Conn.Raw(sql, userName+"%", "%"+name+"%").Find(&users1).Error
-		if err != nil {
-			mysqlLogger.Error(context.Background(), err.Error())
-			return nil
-		}
-		return users1
+	sql := "select * from users where user_name like ? and name like ?"
+	err := Conn.Raw(sql, userName+"%", "%"+name+"%").Find(&users).Error
+	if err != nil {
+		mysqlLogger.Error(context.Background(), err.Error())
+		return nil
 	}
 	return users
 }
