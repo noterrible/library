@@ -44,8 +44,16 @@ func Pages[T any](res []T, currentPageString, pageSizeString string) Page[T] {
 		CurrentPage: currentPage,
 		PageSize:    pageSize,
 		Total:       len(res),
-		Pages:       len(res)/pageSize + 1,
-		Result:      result,
+		Pages: func() int {
+			//计算总页数
+			pages := len(res) / pageSize
+			if len(res)%pageSize == 0 {
+				return pages
+			} else {
+				return pages + 1
+			}
+		}(),
+		Result: result,
 	}
 	return page
 }
