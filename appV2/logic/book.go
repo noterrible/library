@@ -76,8 +76,10 @@ func SearchBook(context *gin.Context) {
 	page := tools.Pages(books, currentPageString, pageSizeString)
 	//将查出的数据存到redis
 	pageJson, _ := json.Marshal(page)
+	//设置随机数种子，以确保每次运行都会产生不同的随机数
+	//    rand.Seed(time.Now().UnixNano())
 	//失效时间
-	loseTime := time.Duration(rand.Intn(100)) * time.Second
+	loseTime := time.Duration(rand.Intn(81)+20) * time.Second
 	model.InfoCacheRedisConn.Set(context, key, pageJson, loseTime)
 	if page.Total == 0 {
 		context.JSON(http.StatusOK, tools.Response{
