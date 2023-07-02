@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"libraryManagementSystem/appV2/logic"
 	"libraryManagementSystem/appV2/model"
+	"libraryManagementSystem/appV2/tools"
+	"net/http"
 )
 
 func adminRouter(r *gin.Engine) {
@@ -55,19 +57,22 @@ func adminRouter(r *gin.Engine) {
 func librarianCheck() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		session := model.GetSession(context)
-		idInter, ok1 := session["id"]
-		nameInter, ok2 := session["name"]
-		if ok1 && ok2 {
-			id := idInter.(int64)
-			name := nameInter.(string)
-			if model.AdminCheck(id, name) {
-				//刷新登录状态，保持24Hour
-				model.SetSession(context, id, name)
-				context.Next()
-				return
-			}
+		idInter, _ := session["id"]
+		nameInter, _ := session["name"]
+		if idInter == nil || nameInter == nil {
+			context.AbortWithStatusJSON(http.StatusOK, tools.Response{
+				Code:    tools.UserInfoError,
+				Message: "请登录",
+				Data:    nil,
+			})
+			return
+
 		}
-		context.Abort()
+		id := idInter.(int64)
+		name := nameInter.(string)
+		//刷新登录状态，保持24Hour
+		model.SetSession(context, id, name)
+		context.Next()
 		return
 	}
 }

@@ -1,15 +1,14 @@
 package model
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
 
 func TestSearchBook(t *testing.T) {
-	q := "BN"
+	//q := "BN"
 
-	fmt.Println("搜索书籍"+q+"：", SearchBook(q, ""))
+	//fmt.Println("搜索书籍"+q+"：", SearchBook(q, ""))
 }
 
 func TestAddBook(t *testing.T) {
@@ -51,3 +50,15 @@ func TestUpdateBook(t *testing.T) {
 	}
 	UpdateBook(book)
 }
+
+//
+//func TestTotalBooks(t *testing.T) {
+//	fmt.Println(TotalBooks())
+//}
+//
+//func TestPageBooks(t *testing.T) {
+//	for _, v := range PageBooks(0, 10) {
+//		fmt.Println(v.Id)
+//
+//	}
+//}

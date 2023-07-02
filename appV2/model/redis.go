@@ -35,7 +35,7 @@ func init() {
 	})
 
 	// 测试连接是否成功
-	_, err = RedisConn.Ping(context.Background()).Result()
+	_, err = StopRestartRequestConn.Ping(context.Background()).Result()
 	if err != nil {
 		fmt.Printf("Failed to connect to Redis for StopRequest: %v", err)
 		return
@@ -47,10 +47,11 @@ func init() {
 	})
 
 	// 测试连接是否成功
-	_, err = RedisConn.Ping(context.Background()).Result()
+	_, err = InfoCacheRedisConn.Ping(context.Background()).Result()
 	if err != nil {
 		fmt.Printf("Failed to connect to Redis for InfoCache: %v", err)
 		return
 	}
+
 	fmt.Println("Connected to Redis")
 }

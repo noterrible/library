@@ -17,8 +17,8 @@ type BookInfo struct {
 	BriefIntroduction  string    `json:"briefIntroduction" form:"briefIntroduction"`
 	AuthorIntroduction string    `json:"authorIntroduction" form:"authorIntroduction"`
 	imgUrl             string    `json:"imgUrl" form:"imgUrl"`
-	delFlg             int       `json:"delFlg" form:"delFlg"`
-	Count              int       `json:"count" form:"count"` //默认1
+	delFlg             int       `json:"delFlg" form:"delFlg"` //默认0
+	Count              int       `json:"count" form:"count"`
 	CategoryId         int64     `json:"categoryId" form:"categoryId"`
 }
 type Category struct {

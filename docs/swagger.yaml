@@ -1,134 +1,9 @@
 definitions:
-  libraryManagementSystem_appV1_logic.Token:
+  logic.Token:
     properties:
       access_token:
         type: string
       refresh_token:
-        type: string
-    type: object
-  libraryManagementSystem_appV1_model.Category:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  libraryManagementSystem_appV1_model.Record:
-    properties:
-      bookId:
-        type: integer
-      id:
-        type: integer
-      overTime:
-        type: string
-      returnTime:
-        type: string
-      startTime:
-        type: string
-      status:
-        description: 已归还1 未归还0
-        type: integer
-      userId:
-        type: integer
-    type: object
-  libraryManagementSystem_appV1_model.User:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      sex:
-        type: string
-      status:
-        description: '`json:""默认正常0 封禁1'
-        type: integer
-      userName:
-        type: string
-    type: object
-  libraryManagementSystem_appV1_tools.Response:
-    properties:
-      code:
-        type: integer
-      data: {}
-      message:
-        type: string
-    type: object
-  libraryManagementSystem_appV2_logic.Token:
-    properties:
-      access_token:
-        type: string
-      refresh_token:
-        type: string
-    type: object
-  libraryManagementSystem_appV2_model.Category:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  libraryManagementSystem_appV2_model.Record:
-    properties:
-      bookId:
-        type: integer
-      id:
-        type: integer
-      overTime:
-        type: string
-      returnTime:
-        type: string
-      startTime:
-        type: string
-      status:
-        description: 已归还1 未归还0
-        type: integer
-      userId:
-        type: integer
-    type: object
-  libraryManagementSystem_appV2_model.User:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      sex:
-        type: string
-      status:
-        description: '`json:""默认正常0 封禁1'
-        type: integer
-      userName:
-        type: string
-    type: object
-  libraryManagementSystem_appV2_tools.Response:
-    properties:
-      code:
-        type: integer
-      data: {}
-      message:
-        type: string
-    type: object
-  model.Book:
-    properties:
-      bn:
-        type: string
-      categoryId:
-        type: integer
-      count:
-        description: 默认1
-        type: integer
-      description:
-        type: string
-      id:
-        type: integer
-      name:
         type: string
     type: object
   model.BookInfo:
@@ -146,7 +21,6 @@ definitions:
       categoryId:
         type: integer
       count:
-        description: 默认1
         type: integer
       id:
         type: integer
@@ -161,44 +35,97 @@ definitions:
       translator:
         type: string
     type: object
-  tools.Page-libraryManagementSystem_appV2_model_Category:
+  model.Category:
     properties:
-      currentPage:
+      id:
         type: integer
-      pageSize:
-        type: integer
-      pages:
-        description: 总页数
-        type: integer
-      result:
-        items:
-          $ref: '#/definitions/libraryManagementSystem_appV2_model.Category'
-        type: array
-      total:
-        description: 总数
-        type: integer
+      name:
+        type: string
     type: object
-  tools.Page-model_BookInfo:
+  model.ListResponse-model_BookInfo:
     properties:
-      currentPage:
+      count:
         type: integer
-      pageSize:
-        type: integer
-      pages:
-        description: 总页数
-        type: integer
-      result:
+      list:
         items:
           $ref: '#/definitions/model.BookInfo'
         type: array
-      total:
-        description: 总数
+    type: object
+  model.ListResponse-model_Category:
+    properties:
+      count:
         type: integer
+      list:
+        items:
+          $ref: '#/definitions/model.Category'
+        type: array
+    type: object
+  model.Record:
+    properties:
+      bookId:
+        type: integer
+      id:
+        type: integer
+      overTime:
+        type: string
+      returnTime:
+        type: string
+      startTime:
+        type: string
+      status:
+        description: 已归还1 未归还0
+        type: integer
+      userId:
+        type: integer
+    type: object
+  model.TurnPageInfo:
+    properties:
+      id:
+        description: 游标，上一页传当前页的第一个id，下一页传入当前页的最后一个
+        type: integer
+      limit:
+        description: 页大小
+        type: integer
+      page:
+        description: 当前页
+        type: integer
+      paginationMethod:
+        description: 翻页方式
+        type: string
+      sort:
+        description: 排序方式
+        type: string
+    type: object
+  model.User:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      sex:
+        type: string
+      status:
+        description: '`json:""默认正常0 封禁1'
+        type: integer
+      userName:
+        type: string
+    type: object
+  tools.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
     type: object
 info:
   contact: {}
   description: go图书管理系统
-  title: 图书管理系统V1
+  title: 图书管理系统V2
   version: "2.0"
 paths:
   /admin/books:
@@ -207,97 +134,19 @@ paths:
       - application/json
       description: 管理员添加图书
       parameters:
-      - description: 书名
+      - description: 书籍
         in: body
-        name: bookName
+        name: book
         required: true
         schema:
-          type: string
-      - description: 作者
-        in: body
-        name: author
-        required: true
-        schema:
-          type: string
-      - description: 出版社
-        in: body
-        name: publishingHouse
-        required: true
-        schema:
-          type: string
-      - description: 译者
-        in: body
-        name: translator
-        required: true
-        schema:
-          type: string
-      - description: 发行时间
-        in: body
-        name: publishDate
-        required: true
-        schema:
-          type: string
-      - description: 页数
-        in: body
-        name: pages
-        required: true
-        schema:
-          type: string
-      - description: ISBN号码
-        in: body
-        name: ISBN
-        required: true
-        schema:
-          type: string
-      - description: 价格
-        in: body
-        name: price
-        required: true
-        schema:
-          type: string
-      - description: 内容简介
-        in: body
-        name: briefIntroduction
-        required: true
-        schema:
-          type: string
-      - description: 作者简介
-        in: body
-        name: authorIntroduction
-        required: true
-        schema:
-          type: string
-      - description: 封面地址
-        in: body
-        name: imgUrl
-        required: true
-        schema:
-          type: string
-      - description: 删除标识
-        in: body
-        name: delFlg
-        required: true
-        schema:
-          type: string
-      - description: 图书数量
-        in: body
-        name: count
-        required: true
-        schema:
-          type: integer
-      - description: 图书种类id
-        in: body
-        name: categoryId
-        required: true
-        schema:
-          type: integer
+          $ref: '#/definitions/model.BookInfo'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 新增图书
       tags:
       - admin/books
@@ -316,7 +165,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 管理员删除图书
       tags:
       - admin/books
@@ -420,7 +269,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 修改图书
       tags:
       - admin/books
@@ -441,7 +290,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 添加分类
       tags:
       - admin/categories
@@ -460,7 +309,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 删除分类
       tags:
       - admin/categories
@@ -479,10 +328,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/libraryManagementSystem_appV2_model.Category'
+                  $ref: '#/definitions/model.Category'
               type: object
       summary: 管理员获取某个分类信息
       tags:
@@ -508,7 +357,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 更新分类
       tags:
       - admin/categories
@@ -521,7 +370,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 图书管理员退出登录
       tags:
       - public
@@ -541,11 +390,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/libraryManagementSystem_appV2_model.Record'
+                    $ref: '#/definitions/model.Record'
                   type: array
               type: object
       summary: 获取所有借/还记录
@@ -580,11 +429,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/libraryManagementSystem_appV2_model.User'
+                    $ref: '#/definitions/model.User'
                   type: array
               type: object
       summary: 搜索用户
@@ -606,10 +455,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/libraryManagementSystem_appV2_model.User'
+                  $ref: '#/definitions/model.User'
               type: object
       summary: 管理员获取用户信息
       tags:
@@ -650,7 +499,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 更新用户信息
       tags:
       - admin/users
@@ -670,11 +519,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/libraryManagementSystem_appV2_model.Record'
+                    $ref: '#/definitions/model.Record'
                   type: array
               type: object
       summary: 获取用户信息
@@ -701,11 +550,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/libraryManagementSystem_appV2_model.Record'
+                    $ref: '#/definitions/model.Record'
                   type: array
               type: object
       summary: 获取用户借/还记录
@@ -733,12 +582,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 图书管理员登录
       tags:
       - public
   /books:
     get:
+      consumes:
+      - application/json
       description: 获取所有图书或者搜索图书
       parameters:
       - description: 当前页
@@ -754,10 +605,12 @@ paths:
       - description: 书籍编号
         in: query
         name: ISBN
+        required: true
         type: string
-      - description: 图书名称
+      - description: 书籍名称
         in: query
         name: bookName
+        required: true
         type: string
       produces:
       - application/json
@@ -766,10 +619,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/tools.Page-model_BookInfo'
+                  $ref: '#/definitions/model.ListResponse-model_BookInfo'
               type: object
       summary: 搜索图书
       tags:
@@ -790,7 +643,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   $ref: '#/definitions/model.BookInfo'
@@ -798,23 +651,31 @@ paths:
       summary: 获取图书信息
       tags:
       - public
-  /categories:
+  /books/page:
     get:
-      description: 搜索获取分类信息
+      consumes:
+      - application/json
+      description: 获取所有图书并进行分页,可以向前或者向后进行翻页
       parameters:
-      - description: 当前页
+      - description: 游标，上一页传当前页的第一个id，下一页传入当前页的最后一个
         in: query
-        name: currentPage
-        required: true
-        type: string
+        name: id
+        type: integer
       - description: 页大小
         in: query
-        name: pageSize
-        required: true
-        type: string
-      - description: 查询条件
+        name: limit
+        type: integer
+      - description: 当前页
         in: query
-        name: q
+        name: page
+        type: integer
+      - description: 翻页方式
+        in: query
+        name: paginationMethod
+        type: string
+      - description: 排序方式
+        in: query
+        name: sort
         type: string
       produces:
       - application/json
@@ -823,12 +684,45 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/tools.Page-libraryManagementSystem_appV2_model_Category'
+                  $ref: '#/definitions/model.TurnPageInfo'
               type: object
-      summary: 搜索分类
+      summary: 分页图书
+      tags:
+      - public
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: 获取分类信息
+      parameters:
+      - description: 页大小
+        in: query
+        name: limit
+        type: integer
+      - description: 当前页
+        in: query
+        name: page
+        type: integer
+      - description: 排序字段
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ListResponse-model_Category'
+              type: object
+      summary: 分页分类
       tags:
       - public
   /getCode:
@@ -841,7 +735,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   additionalProperties:
@@ -851,8 +745,31 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 登录验证码
+      tags:
+      - public
+  /getPhoneCode:
+    get:
+      description: 用户登录页获取验证码操作
+      parameters:
+      - description: 用户电话
+        in: query
+        name: tel
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tools.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.Response'
+      summary: 手机验证码
       tags:
       - public
   /user/users:
@@ -871,10 +788,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/libraryManagementSystem_appV2_model.User'
+                  $ref: '#/definitions/model.User'
               type: object
       summary: 用户查看信息
       tags:
@@ -915,7 +832,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 用户修改信息
       tags:
       - user/users
@@ -934,7 +851,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 删除用户
       tags:
       - admin/users
@@ -953,7 +870,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 用户收件箱
       tags:
       - user/users
@@ -977,11 +894,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/libraryManagementSystem_appV2_model.Record'
+                    $ref: '#/definitions/model.Record'
                   type: array
               type: object
       summary: 用户获取所有记录或者借/还记录
@@ -1007,7 +924,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 用户借书
       tags:
       - user/books
@@ -1033,7 +950,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 用户还书
       tags:
       - user/books
@@ -1070,12 +987,43 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            - $ref: '#/definitions/tools.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/libraryManagementSystem_appV2_logic.Token'
+                  $ref: '#/definitions/logic.Token'
               type: object
       summary: 用户登录
+      tags:
+      - public
+  /userLoginPhoneCode:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 会执行用户登录操作
+      parameters:
+      - description: 验证码的key,用户电话
+        in: query
+        name: phone
+        required: true
+        type: string
+      - description: 验证码
+        in: query
+        name: captcha
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/tools.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/logic.Token'
+              type: object
+      summary: 用户手机号登录
       tags:
       - public
   /users:
@@ -1115,7 +1063,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/libraryManagementSystem_appV2_tools.Response'
+            $ref: '#/definitions/tools.Response'
       summary: 新增一个用户
       tags:
       - public

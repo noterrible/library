@@ -29,25 +29,38 @@ func GetCategory(context *gin.Context) {
 	})
 }
 
-// SearchCategory godoc
+// PageCategory godoc
 //
-// @Summary		搜索分类
-// @Description	搜索获取分类信息
+// @Summary		分页分类
+// @Description	获取分类信息
 // @Tags		public
+// @Accept		json
 // @Produce		json
-// @Param currentPage  query string true "当前页"
-// @Param pageSize  query string true "页大小"
-// @Param q  query string false "查询条件"
-// @Success 200 {object} tools.Response{data=tools.Page[model.Category]{}}
+// @Param pageInfo  query model.PageInfo true "分页信息"
+// @Success 200 {object} tools.Response{data=model.ListResponse[model.Category]{}}
 // @Router			/categories [GET]
-func SearchCategory(context *gin.Context) {
-	query := context.Query("q")
-	categories := model.SearchCategory(query)
-	currentPageString := context.Query("currentPage")
-	pageSizeString := context.Query("pageSize")
-	//查出所有数据后分页函数进行分页
-	page := tools.Pages(categories, currentPageString, pageSizeString)
-	if page.Total == 0 {
+func PageCategory(context *gin.Context) {
+	//普通分页
+	var pageInfo model.PageInfo
+	if err := context.ShouldBind(&pageInfo); err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "错误" + err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+	var page model.ListResponse[model.Category]
+	err := model.Pages(&page, pageInfo)
+	if err != nil {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "错误" + err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+	if len(page.List) == 0 {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
 			Message: "没有此页数据",

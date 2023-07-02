@@ -8,5 +8,5 @@ import (
 func Start() {
 	model.New()
 	r := router.New()
-	r.Run(":8080")
+	r.Run("localhost:8080")
 }

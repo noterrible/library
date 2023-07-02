@@ -17,6 +17,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -121,6 +122,86 @@ func GetCode(ctx *gin.Context) {
 	return
 }
 
+// GetPhoneCode godoc
+//
+// @Tags		public
+// @Summary		手机验证码
+// @Description	用户登录页获取验证码操作
+// @Produce		json
+// @Param tel query string true "用户电话"
+// @Success 200 {object} tools.Response
+// @Failure 500 {object} tools.Response
+// @Router			/getPhoneCode [GET]
+func GetPhoneCode(ctx *gin.Context) {
+
+	//电话当验证码的key
+	tel := ctx.Query("tel")
+	//正则匹配电话
+	phoneRegexp := regexp.MustCompile(`^1[3456789]\d{9}$`)
+	if ok := phoneRegexp.MatchString(tel); !ok {
+		ctx.JSON(http.StatusBadRequest, tools.Response{
+			Code:    tools.BadRequest,
+			Message: "用户电话格式不正确",
+			Data:    nil,
+		})
+		return
+	}
+	//map配置白名单。(可以改为通过读取文件配置白名单)
+	var specialPhones = map[string]int{
+		"15837691877": 0,
+		"15083139351": 0,
+	}
+	//不是白名单，限制用户次数
+	if _, ok := specialPhones[tel]; !ok {
+		/*这里可以添加代码。限制单个IP的请求多个手机号验证码*/
+
+		//对单个手机号进行一天5次发送限制
+		countRedisConn := model.StopRestartRequestConn
+		countStr, _ := countRedisConn.Get(ctx, tel).Result()
+		count, _ := strconv.Atoi(countStr)
+		if count == 0 {
+			countRedisConn.Set(ctx, tel, 1, 86400*time.Second)
+		} else if count <= 5 {
+			countRedisConn.Incr(ctx, tel)
+		} else {
+			ctx.JSON(http.StatusOK, tools.Response{
+				Code:    tools.OK,
+				Message: "您已超出今日5次验证码限制",
+				Data:    nil,
+			})
+			return
+		}
+	}
+	// 随机种子
+	rand.Seed(time.Now().Unix())
+	// 随机生成4位验证码
+	code := fmt.Sprintf("%04d", rand.Intn(10000))
+	fmt.Println("验证码:", code)
+	resp, err := tools.GetCode(tel, code)
+	if err != nil {
+		ctx.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "未知错误" + err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+	if *resp.Body.Message != "OK" {
+		ctx.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "发送失败，失败原因：" + *resp.Body.Message,
+			Data:    nil,
+		})
+		return
+	}
+	model.RedisConn.Set(ctx, tel, code, 2*time.Minute)
+	ctx.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "发送成功",
+		Data:    nil,
+	})
+}
+
 // UserLogin godoc
 //
 // @Summary		用户登录
@@ -164,6 +245,7 @@ func UserLogin(context *gin.Context) {
 	//校验
 	dbUser := model.UserCheck(user.UserName, user.Password)
 	if dbUser.Id > 0 {
+		//cookie存用户id，其他地方会用到
 		context.SetCookie("id", strconv.FormatInt(dbUser.Id, 10), 3600, "/", "", false, true)
 		a, r, errT := tools.Token.GetToken(dbUser.Id, dbUser.UserName)
 		log.Printf("atoken:%s\n", a)
@@ -190,6 +272,72 @@ func UserLogin(context *gin.Context) {
 		Code:    tools.UserInfoError,
 		Message: "用户信息错误",
 		Data:    nil,
+	})
+}
+
+// UserLoginPhoneCode godoc
+//
+// @Summary		用户手机号登录
+// @Description	会执行用户登录操作
+// @Tags		public
+// @Accept		multipart/form-data
+// @Produce		json
+// @Param phone query string true "验证码的key,用户电话"
+// @Param captcha query string true "验证码"
+// @Success 200 {object} tools.Response{data=Token}
+// @Failed 406,500 {object} tools.Response
+// @Router			/userLoginPhoneCode [POST]
+func UserLoginPhoneCode(context *gin.Context) {
+	phone := context.Query("phone")
+	//校验验证码
+	formCode := context.Query("captcha")
+	var redisClient *redis.Client = model.RedisConn
+
+	//redis验证码的key
+	redisCode, _ := redisClient.Get(context, phone).Result()
+	if redisCode != formCode {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.CaptchaError,
+			Message: "验证码错误",
+		})
+		return
+	}
+	//通过手机号查找用户
+	dbUser := model.GetUserByPhone(phone)
+	if dbUser.Id <= 0 { //注册账户
+		//默认username为电话
+		user := model.User{UserName: phone, Phone: phone}
+		var err error
+		user.Id, err = model.AddUser(user)
+		if err != nil {
+			context.JSON(http.StatusOK, tools.Response{
+				Code:    tools.OK,
+				Message: "注册失败",
+			})
+			return
+		}
+	}
+	//cookie存用户id，其他地方可能会用到
+	context.SetCookie("id", strconv.FormatInt(dbUser.Id, 10), 3600, "/", "", false, true)
+	//获取token
+	a, r, errT := tools.Token.GetToken(dbUser.Id, dbUser.UserName)
+	log.Printf("atoken:%s\n", a)
+	log.Printf("rtoken:%s\n", r)
+	if errT != nil {
+		context.JSON(http.StatusInternalServerError, tools.Response{
+			Code:    tools.InternalServerError,
+			Message: "Token生成失败:" + errT.Error(),
+			Data:    nil,
+		})
+		return
+	}
+	context.JSON(http.StatusOK, tools.Response{
+		Code:    tools.OK,
+		Message: "登陆成功",
+		Data: Token{
+			AccessToken:  a,
+			RefreshToken: r,
+		},
 	})
 }
 
@@ -265,19 +413,41 @@ func GetUserById(context *gin.Context) {
 func SearchUser(context *gin.Context) {
 	userName := context.Query("userName")
 	name := context.Query("name")
-	dbUsers := model.SearchUser(userName, name)
+
+	currentPageString := context.Query("currentPage")
+	pageSizeString := context.Query("pageSize")
+	currentPage, _ := strconv.Atoi(currentPageString)
+	pageSize, _ := strconv.Atoi(pageSizeString)
+	offset := pageSize * (currentPage - 1)
+	dbUsers, count := model.SearchUser(userName, name, pageSize, offset)
+	if dbUsers == nil {
+		context.JSON(http.StatusInternalServerError, tools.Response{
+			Code:    tools.OK,
+			Message: "查询错误",
+		})
+		return
+	}
 	//把要响应用户密码置空
 	for i, _ := range dbUsers {
 		dbUsers[i].Password = ""
 	}
-	currentPageString := context.Query("currentPage")
-	pageSizeString := context.Query("pageSize")
 	//查出所有数据后分页函数进行分页
-	page := tools.Pages(dbUsers, currentPageString, pageSizeString)
-	if page.Total == 0 {
+	page := model.ListResponse[model.User]{
+		Count: count,
+		List:  dbUsers,
+	}
+	if page.Count == 0 {
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
-			Message: "没有此页数据",
+			Message: "搜索的用户不存在",
+			Data:    nil,
+		})
+		return
+	}
+	if len(dbUsers) == 0 {
+		context.JSON(http.StatusOK, tools.Response{
+			Code:    tools.OK,
+			Message: "此页用户不存在",
 			Data:    nil,
 		})
 		return

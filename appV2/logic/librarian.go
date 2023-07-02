@@ -5,6 +5,7 @@ import (
 	"libraryManagementSystem/appV2/model"
 	"libraryManagementSystem/appV2/tools"
 	"net/http"
+	"strconv"
 )
 
 //type Session struct {
@@ -42,6 +43,7 @@ func LibrarianLogin(context *gin.Context) {
 			})
 			return
 		}
+		context.SetCookie("admin_id", strconv.FormatInt(admin.Id, 10), 86400, "/", "", false, true)
 		context.JSON(http.StatusOK, tools.Response{
 			Code:    tools.OK,
 			Message: "登陆成功",
@@ -64,15 +66,7 @@ func LibrarianLogin(context *gin.Context) {
 // @Failed 406,500 {object} tools.Response
 // @Router			/admin/librarian/logout [GET]
 func LibrarianLogout(ctx *gin.Context) {
-	err := model.FlushSession(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, tools.Response{
-			Code:    tools.InternalServerError,
-			Message: "退出登陆失败",
-			Data:    nil,
-		})
-		return
-	}
+	model.FlushSession(ctx)
 	ctx.JSON(http.StatusOK, tools.Response{
 		Code:    tools.OK,
 		Message: "退出成功",
